@@ -11,12 +11,15 @@ import android.view.ViewAnimationUtils
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.data.database.entity.GitHubRepoEntity
+import com.alexeymerov.githubrepositories.di.component.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
 import com.alexeymerov.githubrepositories.utils.extensions.dpToPx
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
@@ -26,8 +29,13 @@ import kotlinx.android.synthetic.main.activity_repos.imageRecycler
 import kotlinx.android.synthetic.main.activity_repos.progressBar
 import kotlinx.android.synthetic.main.activity_repos.searchToolbar
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class ReposActivity : BaseActivity() {
+
+	@Inject
+	lateinit var viewModelFactory: ViewModelProvider.Factory
+	private val viewModel by lazy { getViewModel<IReposViewModel>(viewModelFactory) }
 
 	private val reposRecyclerAdapter by lazy { initRecyclerAdapter() }
 	private val layoutManager by lazy { initLayoutManager() }
@@ -45,6 +53,8 @@ class ReposActivity : BaseActivity() {
 		initViews()
 		initObservers()
 	}
+
+	override fun injectActivity(component: ViewModelComponent) = component.injectActivity(this)
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)

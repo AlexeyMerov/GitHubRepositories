@@ -51,7 +51,6 @@ android {
     }
 }
 
-
 def buildOutputApkName(DomainObjectSet domainObjectSet) {
     domainObjectSet.all { variant ->
         variant.outputs.all { output ->

@@ -27,5 +27,5 @@ abstract class BaseRepository {
 		compositeDisposable.add(this)
 	}
 
-	fun onCleared() = compositeDisposable.clear()
+	fun clean() = compositeDisposable.clear()
 }

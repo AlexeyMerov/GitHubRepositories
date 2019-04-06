@@ -4,16 +4,20 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.alexeymerov.githubrepositories.data.database.entity.GitHubRepoEntity
-import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubReposRepository
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IGitHubReposViewModel
+import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
+import javax.inject.Inject
 
-class ReposViewModel(application: Application, private val repository: IGitHubReposRepository) :
-	IGitHubReposViewModel(application) {
+class ReposViewModel
+@Inject constructor(application: Application, private val reposUseCase: IReposUseCase)
+	: IReposViewModel(application) {
 
 	override val repositoryList: LiveData<List<GitHubRepoEntity>> = MutableLiveData<List<GitHubRepoEntity>>()
 
+	override fun getTest() = reposUseCase.getTest()
+
 	override fun onCleared() {
-		repository.onCleared()
+		reposUseCase.clean()
 		super.onCleared()
 	}
 }
