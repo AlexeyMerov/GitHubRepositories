@@ -1,4 +1,4 @@
-package com.alexeymerov.githubrepositories.di.scope
+package com.alexeymerov.githubrepositories.presentation.di.scope
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

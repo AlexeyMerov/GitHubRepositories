@@ -8,9 +8,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.alexeymerov.githubrepositories.App
 import com.alexeymerov.githubrepositories.R
-import com.alexeymerov.githubrepositories.di.component.ViewModelComponent
+import com.alexeymerov.githubrepositories.app.App
+import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 
 abstract class BaseActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.alexeymerov.githubrepositories.di.module
+package com.alexeymerov.githubrepositories.app.di.module
 
 import dagger.Module
 import dagger.Provides
@@ -6,6 +6,7 @@ import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.OkHttpClient.Builder
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -26,16 +27,22 @@ class BaseApiModule {
 			httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 			addInterceptor(httpLoggingInterceptor)
 //            .addNetworkInterceptor(StethoInterceptor())
-		}
+		}!!
 
 	@Provides
-	fun provideRetrofitBuilder(clientBuilder: Builder) = Retrofit.Builder()
-		.client(clientBuilder.build())
-		.addConverterFactory(MoshiConverterFactory.create())
-		.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+	fun provideOkHttpClient(clientBuilder: Builder): OkHttpClient = clientBuilder.build()
+
+	@Provides
+	fun provideJsonConverter(): Converter.Factory = MoshiConverterFactory.create()
+
+	@Provides
+	fun provideRetrofitBuilder(client: OkHttpClient, factory: Converter.Factory) = Retrofit.Builder()
+		.client(client)
+		.addConverterFactory(factory)
+		.addCallAdapterFactory(RxJava2CallAdapterFactory.create())!!
 
 	@Provides
 	fun provideRetrofit(retrofitBuilder: Retrofit.Builder, serverUrl: String) =
-		retrofitBuilder.baseUrl(serverUrl).build()
+		retrofitBuilder.baseUrl(serverUrl).build()!!
 
 }

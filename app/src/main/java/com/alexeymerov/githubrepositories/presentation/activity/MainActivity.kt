@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.alexeymerov.githubrepositories.R.layout
-import com.alexeymerov.githubrepositories.di.component.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
+import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import javax.inject.Inject
 

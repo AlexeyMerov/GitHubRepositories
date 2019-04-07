@@ -1,22 +1,15 @@
 package com.alexeymerov.githubrepositories.presentation.viewmodel
 
-import android.app.Application
-import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
-import com.alexeymerov.githubrepositories.App
+import androidx.lifecycle.ViewModel
 import io.reactivex.SingleTransformer
 import io.reactivex.schedulers.Schedulers
 
-abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
+abstract class BaseViewModel : ViewModel() {
 
 	protected fun <T> singleTransformer(): SingleTransformer<T, T> = SingleTransformer {
 		it
 			.subscribeOn(Schedulers.io())
 			.observeOn(Schedulers.io())
 	}
-
-	fun getContext() = getApplication<App>()
-
-	fun getString(@StringRes id: Int): String = getContext().getString(id)
 
 }

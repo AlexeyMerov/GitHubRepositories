@@ -1,16 +1,17 @@
-package com.alexeymerov.githubrepositories.di.module
+package com.alexeymerov.githubrepositories.domain.di
 
-import com.alexeymerov.githubrepositories.data.repository.GitHubReposRepository
+import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubReposRepository
 import com.alexeymerov.githubrepositories.domain.usecase.ReposUseCase
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [RepositoryModule::class])
+@Module
 class UseCaseModule {
 
 	@Provides
-	fun provideReposUseCase(gitHubReposRepository: GitHubReposRepository): IReposUseCase =
+	@UseCaseScope
+	fun provideReposUseCase(gitHubReposRepository: IGitHubReposRepository): IReposUseCase =
 		ReposUseCase(gitHubReposRepository)
 
 }

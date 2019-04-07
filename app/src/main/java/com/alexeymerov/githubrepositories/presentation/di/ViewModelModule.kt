@@ -1,8 +1,8 @@
-package com.alexeymerov.githubrepositories.di.module
+package com.alexeymerov.githubrepositories.presentation.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.alexeymerov.githubrepositories.di.scope.ViewModelKey
+import com.alexeymerov.githubrepositories.presentation.di.scope.ViewModelKey
 import com.alexeymerov.githubrepositories.presentation.viewmodel.ReposViewModel
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import dagger.Binds
@@ -11,7 +11,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Inject
 import javax.inject.Provider
 
-@Module(includes = [UseCaseModule::class])
+@Module
 abstract class ViewModelModule {
 
 	@Binds

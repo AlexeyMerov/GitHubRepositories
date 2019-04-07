@@ -1,4 +1,4 @@
-package com.alexeymerov.githubrepositories.di.module
+package com.alexeymerov.githubrepositories.data.di
 
 import com.alexeymerov.githubrepositories.data.database.dao.GitHubReposDAO
 import com.alexeymerov.githubrepositories.data.repository.GitHubReposRepository
@@ -7,12 +7,12 @@ import com.alexeymerov.githubrepositories.data.server.communicator.GitHubCommuni
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [GitHubApiModule::class, DaoModule::class])
+@Module
 class RepositoryModule {
 
 	@Provides
-	fun provideGitHubRepository(gitHubCommunicator: GitHubCommunicator,
-								gitHubReposDAO: GitHubReposDAO): IGitHubReposRepository =
-		GitHubReposRepository(gitHubCommunicator, gitHubReposDAO)
+	@RepositoryScope
+	fun provideGitHubRepository(gitHubCommunicator: GitHubCommunicator, gitHubReposDAO: GitHubReposDAO)
+			: IGitHubReposRepository = GitHubReposRepository(gitHubCommunicator, gitHubReposDAO)
 
 }
