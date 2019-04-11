@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.activity_repos.searchToolbar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ReposActivity : BaseActivity() {
+class SearchReposActivity : BaseActivity() {
 
 	@Inject
 	lateinit var viewModelFactory: ViewModelProvider.Factory

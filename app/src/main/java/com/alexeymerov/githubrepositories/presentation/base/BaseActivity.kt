@@ -14,10 +14,6 @@ import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 
 abstract class BaseActivity : AppCompatActivity() {
 
-	inline fun <reified T : ViewModel> getViewModel(factory: ViewModelProvider.Factory): T {
-		return ViewModelProviders.of(this, factory).get(T::class.java)
-	}
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		injectActivity(App.viewModelComponent)
@@ -53,6 +49,10 @@ abstract class BaseActivity : AppCompatActivity() {
 	override fun finish() {
 		super.finish()
 		overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down)
+	}
+
+	inline fun <reified T : ViewModel> getViewModel(factory: ViewModelProvider.Factory): T {
+		return ViewModelProviders.of(this, factory).get(T::class.java)
 	}
 
 }

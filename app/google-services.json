@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "154587326096",
+    "firebase_url": "https://githubrepos-a1c90.firebaseio.com",
+    "project_id": "githubrepos-a1c90",
+    "storage_bucket": "githubrepos-a1c90.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154587326096:android:b4c8589dbbbb3087",
+        "android_client_info": {
+          "package_name": "com.alexeymerov.githubrepositories"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "154587326096-ih8o6kha9l7kdqhoc4t76t67mjdo00ol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alexeymerov.githubrepositories",
+            "certificate_hash": "8cce906d03daa1382734bf33fa64f15462433a6e"
+          }
+        },
+        {
+          "client_id": "154587326096-qh462ubsp3nkgiumahdfp776o1rblbvv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6LimFxiEXv4sgc_Xuu9u_73m3MX_HEoU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "154587326096-qh462ubsp3nkgiumahdfp776o1rblbvv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

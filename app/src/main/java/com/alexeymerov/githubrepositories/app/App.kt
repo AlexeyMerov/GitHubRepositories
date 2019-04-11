@@ -1,13 +1,14 @@
 package com.alexeymerov.githubrepositories.app
 
 import android.app.Application
+import com.alexeymerov.githubrepositories.app.di.DaggerAppComponent
+import com.alexeymerov.githubrepositories.data.di.DaggerRepositoryComponent
 import com.alexeymerov.githubrepositories.data.di.RepositoryModule
-import com.alexeymerov.githubrepositories.di.data.component.DaggerRepositoryComponent
-import com.alexeymerov.githubrepositories.di.domain.DaggerUseCaseComponent
-import com.alexeymerov.githubrepositories.di.global.DaggerAppComponent
-import com.alexeymerov.githubrepositories.di.presentation.DaggerViewModelComponent
+import com.alexeymerov.githubrepositories.domain.di.DaggerUseCaseComponent
 import com.alexeymerov.githubrepositories.domain.di.UseCaseModule
+import com.alexeymerov.githubrepositories.presentation.di.DaggerViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
+import com.google.firebase.FirebaseApp
 
 class App : Application() {
 
@@ -19,6 +20,7 @@ class App : Application() {
 	override fun onCreate() {
 		super.onCreate()
 		initDagger()
+		FirebaseApp.initializeApp(this)
 	}
 
 	private fun initDagger() {
