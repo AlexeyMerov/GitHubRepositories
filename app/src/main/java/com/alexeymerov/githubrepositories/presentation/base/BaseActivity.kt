@@ -21,8 +21,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
 	abstract fun injectActivity(component: ViewModelComponent)
 
-	protected fun initToolbar(titleText: String? = null,
-							  enableHomeButton: Boolean = false,
+	protected fun initToolbar(titleText: String? = null, enableHomeButton: Boolean = false,
 							  @DrawableRes iconRes: Int? = null) {
 		findViewById<Toolbar>(R.id.toolbar)?.apply {
 			setSupportActionBar(this)

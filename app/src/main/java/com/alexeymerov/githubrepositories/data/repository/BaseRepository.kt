@@ -23,7 +23,7 @@ abstract class BaseRepository {
 			.retry(DEFAULT_RETRY_ATTEMPTS)
 	}
 
-	private fun Disposable.addDisposable() {
+	protected fun Disposable.trackDisposable() {
 		compositeDisposable.add(this)
 	}
 

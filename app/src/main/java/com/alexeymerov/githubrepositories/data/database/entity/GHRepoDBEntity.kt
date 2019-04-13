@@ -5,10 +5,8 @@ import androidx.room.PrimaryKey
 import com.alexeymerov.githubrepositories.data.database.dao.GitHubReposDAO
 
 @Entity(tableName = GitHubReposDAO.TABLE_NAME)
-data class GitHubRepoEntity(
+data class GHRepoDBEntity(
 		@PrimaryKey
 		val id: Long,
-		val dateMillis: Long,
 		val name: String
-
 )

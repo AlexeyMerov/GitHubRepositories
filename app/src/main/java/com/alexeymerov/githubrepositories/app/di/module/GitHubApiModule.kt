@@ -2,6 +2,7 @@ package com.alexeymerov.githubrepositories.app.di.module
 
 import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService
 import com.alexeymerov.githubrepositories.data.server.communicator.GitHubCommunicator
+import com.alexeymerov.githubrepositories.data.server.communicator.contract.IGitHubCommunicator
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -26,6 +27,6 @@ class GitHubApiModule {
 
 	@Provides
 	@Singleton
-	fun provideGitHubCommunicator(apiService: GitHubApiService) = GitHubCommunicator(apiService)
+	fun provideGitHubCommunicator(apiService: GitHubApiService): IGitHubCommunicator = GitHubCommunicator(apiService)
 
 }

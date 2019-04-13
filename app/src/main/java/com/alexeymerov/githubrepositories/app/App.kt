@@ -24,7 +24,7 @@ class App : Application() {
 	}
 
 	private fun initDagger() {
-		val appComponent = DaggerAppComponent.builder().applicationContext(this).build()
+		val appComponent = DaggerAppComponent.factory().create(this)
 
 		val repositoryComponent = DaggerRepositoryComponent.builder()
 			.appComponent(appComponent)

@@ -1,19 +1,22 @@
 package com.alexeymerov.githubrepositories.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.alexeymerov.githubrepositories.data.database.entity.GitHubRepoEntity
+import androidx.lifecycle.LiveDataReactiveStreams
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import javax.inject.Inject
 
 class ReposViewModel
-@Inject constructor(private val reposUseCase: IReposUseCase)
-	: IReposViewModel() {
+@Inject constructor(private val reposUseCase: IReposUseCase) : IReposViewModel() {
 
-	override val repositoryList: LiveData<List<GitHubRepoEntity>> = MutableLiveData<List<GitHubRepoEntity>>()
+	private val repositoriesLiveData by lazy { LiveDataReactiveStreams.fromPublisher(reposUseCase.getReposList()) }
 
-	override fun getTest() = reposUseCase.getTest()
+	override fun getReposList() = repositoriesLiveData
+
+	override fun searchRepos(query: String) = reposUseCase.searchRepositories(query)
+
+	override fun searchRepos(query: String, pageNum: Int, perPage: Int) {
+		reposUseCase.searchRepositories(query, pageNum = pageNum, perPage = perPage)
+	}
 
 	override fun onCleared() {
 		reposUseCase.clean()

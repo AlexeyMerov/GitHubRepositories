@@ -1,28 +1,36 @@
 package com.alexeymerov.githubrepositories.presentation.activity
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexeymerov.githubrepositories.R
-import com.alexeymerov.githubrepositories.data.database.entity.GitHubRepoEntity
+import com.alexeymerov.githubrepositories.R.string
+import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
-import com.alexeymerov.githubrepositories.utils.extensions.dpToPx
+import com.alexeymerov.githubrepositories.utils.debugLog
+import com.alexeymerov.githubrepositories.utils.errorLog
+import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
+import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.auth.FirebaseAuth
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_repos.imageRecycler
@@ -33,23 +41,31 @@ import javax.inject.Inject
 
 class SearchReposActivity : BaseActivity() {
 
+	private val RC_SIGN_IN = 9988
+
 	@Inject
 	lateinit var viewModelFactory: ViewModelProvider.Factory
 	private val viewModel by lazy { getViewModel<IReposViewModel>(viewModelFactory) }
 
 	private val reposRecyclerAdapter by lazy { initRecyclerAdapter() }
 	private val layoutManager by lazy { initLayoutManager() }
-	private var isInSearch = false
+	private val searchSubject by lazy { PublishSubject.create<String>() }
+
+	private val firebaseAuth by lazy { FirebaseAuth.getInstance() }
+	private val isUserAuthorized: Boolean
+		get() = firebaseAuth.currentUser != null
+
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
 	private lateinit var lastQuery: String
 	private lateinit var searchDisposable: Disposable
 	private lateinit var paginationListener: EndlessRecyclerViewScrollListener
 
+	private var isInSearch = false
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_repos)
-
 		initViews()
 		initObservers()
 	}
@@ -58,15 +74,22 @@ class SearchReposActivity : BaseActivity() {
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)
+		val accountItem = menu.findItem(R.id.action_login_logout)
+		if (isUserAuthorized) accountItem.icon = ContextCompat.getDrawable(this, R.drawable.ic_logout)
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
-		if (item.itemId == R.id.action_search) {
-			menuItemSearch.expandActionView()
-			searchToolbar.circleReveal(true)
+		when (item.itemId) {
+			R.id.action_search -> onSearchClicked()
+			R.id.action_login_logout -> onAccountClicked()
 		}
 		return super.onOptionsItemSelected(item)
+	}
+
+	private fun onSearchClicked() {
+		menuItemSearch.expandActionView()
+		circleReveal(searchToolbar, true)
 	}
 
 	override fun onDestroy() {
@@ -82,28 +105,23 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun initSearchToolbar() {
 		searchToolbar.inflateMenu(R.menu.menu_search)
-		searchToolbar.setNavigationOnClickListener { searchToolbar.circleReveal(false) }
+		searchToolbar.setNavigationOnClickListener { circleReveal(searchToolbar, false) }
 
 		searchMenu = searchToolbar.menu
 		menuItemSearch = searchMenu.findItem(R.id.action_filter_search)
-		menuItemSearch.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-			override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-				searchToolbar.circleReveal(true)
-				isInSearch = true
-				return true
-			}
-
-			override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-				searchToolbar.circleReveal(false)
-				isInSearch = false
+		menuItemSearch.onExpandListener(
+				onExpanded = {
+					circleReveal(searchToolbar, true)
+					isInSearch = true
+				},
+				onCollapsed = {
+					circleReveal(searchToolbar, false)
+					isInSearch = false
 //				viewModel.loadImages()
-				return true
-			}
-		})
+				}
+		)
 		initSearchView()
 	}
-
-	private val searchSubject = PublishSubject.create<String>()
 
 	private fun initSearchView() {
 		val searchView = searchMenu.findItem(R.id.action_filter_search)?.actionView as SearchView
@@ -114,12 +132,12 @@ class SearchReposActivity : BaseActivity() {
 		closeButton.setImageResource(R.drawable.ic_close_black)
 
 		val txtSearch = searchView.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
-		txtSearch.hint = "Search..."
+		txtSearch.hint = getString(string.search_string)
 		txtSearch.setHintTextColor(Color.DKGRAY)
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
 
 		searchDisposable = searchSubject
-			.filter { !it.isEmpty() }
+			.filter { it.isNotEmpty() }
 			.debounce(500, TimeUnit.MILLISECONDS)
 			.subscribe {
 				lastQuery = it.toString()
@@ -136,8 +154,8 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun initRecyclerAdapter() = RepositoriesRecyclerAdapter(this, ::onRepoClicked)
 
-	private fun onRepoClicked(gitHubRepoEntity: GitHubRepoEntity, view: View) {
-
+	private fun onRepoClicked(entity: GHRepoEntity, view: View) {
+		//todo open link
 	}
 
 	private fun initRecycler() {
@@ -156,29 +174,44 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun initObservers() {
-
+		viewModel.getReposList().observe(this, Observer {
+			reposRecyclerAdapter.items = it
+		})
 	}
 
-	private fun View.circleReveal(needShow: Boolean) = circleReveal(id, needShow)
+	private fun onAccountClicked() = when (isUserAuthorized) {
+		true -> logoutUser()
+		false -> loginGithub()
+	}
 
-	private fun circleReveal(viewId: Int, needShow: Boolean) {
-		val myView = findViewById<View>(viewId)
-		val width = myView.width
-		val centerX = width - 28.dpToPx()
-		val centerY = myView.height / 2
-		val startRadius = if (needShow) 0f else width.toFloat()
-		val endRadius = if (needShow) width.toFloat() else 0f
-		if (needShow) myView.visibility = View.VISIBLE
+	private fun logoutUser() {
+		//todo are u sure
+		AuthUI.getInstance().signOut(this)
+	}
 
-		val anim = ViewAnimationUtils.createCircularReveal(myView, centerX, centerY, startRadius, endRadius)
-		anim.apply {
-			addListener(object : AnimatorListenerAdapter() {
-				override fun onAnimationEnd(animation: Animator) {
-					if (!needShow) myView.visibility = View.INVISIBLE
-				}
-			})
-			duration = 350L
-			start()
+	private fun loginGithub() {
+		val gitHubProvider = AuthUI.IdpConfig.GitHubBuilder().build()
+		val providers = arrayListOf(gitHubProvider)
+		val intent = AuthUI.getInstance()
+			.createSignInIntentBuilder()
+			.setAvailableProviders(providers)
+			.build()
+
+		startActivityForResult(intent, RC_SIGN_IN)
+	}
+
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		super.onActivityResult(requestCode, resultCode, data)
+		if (requestCode != RC_SIGN_IN) return
+		val response = IdpResponse.fromResultIntent(data)
+		when (resultCode) {
+			Activity.RESULT_OK -> onSuccessAuthorization(response)
+			else -> errorLog(response?.error)
 		}
+	}
+
+	private fun onSuccessAuthorization(response: IdpResponse?) {
+		val userToken = response?.idpToken
+		debugLog(firebaseAuth.currentUser?.displayName)
 	}
 }

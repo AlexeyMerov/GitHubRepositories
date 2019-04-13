@@ -16,7 +16,7 @@
             android:allowBackup="false"
             tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".presentation.activity.AuthActivity">
+        <activity android:name=".presentation.activity.SearchReposActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -24,8 +24,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
-        <activity android:name=".presentation.activity.SearchReposActivity"/>
 
     </application>
 

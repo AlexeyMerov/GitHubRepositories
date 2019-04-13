@@ -1,6 +1,7 @@
 package com.alexeymerov.githubrepositories.utils.extensions
 
 import android.content.res.Resources
+import android.view.MenuItem
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
@@ -28,3 +29,17 @@ interface AutoUpdatableAdapter<T> {
 fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 fun currentMillis() = System.currentTimeMillis()
+
+inline fun MenuItem.onExpandListener(crossinline onExpanded: () -> Unit, crossinline onCollapsed: () -> Unit) {
+	setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+		override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+			onExpanded()
+			return true
+		}
+
+		override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+			onCollapsed()
+			return true
+		}
+	})
+}

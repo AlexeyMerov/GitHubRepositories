@@ -1,13 +1,20 @@
 package com.alexeymerov.githubrepositories.data.server.api
 
-import com.alexeymerov.githubrepositories.data.server.pojo.response.GitHubRepoResponse
+import com.alexeymerov.githubrepositories.data.server.pojo.response.GHRepositoryResponse
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GitHubApiService {
 
-	@GET("repository")
-	fun getRepos(@Query("name") name: String): Single<GitHubRepoResponse>
+	enum class SORTING {
+		STARS
+	}
+
+	@GET("search/repositories")
+	fun searchRepositories(@Query("q") query: String,
+						   @Query("s") sortType: SORTING,
+						   @Query("page") pageNum: Int,
+						   @Query("per_page") perPage: Int): Single<List<GHRepositoryResponse>>
 
 }

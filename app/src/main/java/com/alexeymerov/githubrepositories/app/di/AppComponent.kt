@@ -4,7 +4,7 @@ import android.app.Application
 import com.alexeymerov.githubrepositories.app.di.module.DbModule
 import com.alexeymerov.githubrepositories.app.di.module.GitHubApiModule
 import com.alexeymerov.githubrepositories.data.database.dao.GitHubReposDAO
-import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService
+import com.alexeymerov.githubrepositories.data.server.communicator.contract.IGitHubCommunicator
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -13,19 +13,15 @@ import javax.inject.Singleton
 @Component(modules = [DbModule::class, GitHubApiModule::class])
 interface AppComponent {
 
-	@Component.Builder
+	@Component.Factory
 	interface Builder {
 
-		@BindsInstance
-		fun applicationContext(application: Application): Builder
-
-		fun build(): AppComponent
-
+		fun create(@BindsInstance application: Application): AppComponent
 	}
 
 	fun getApplication(): Application
 
-	fun getGitHubApiService(): GitHubApiService
+	fun getGitHubCommunicator(): IGitHubCommunicator
 
 	fun getGitHubReposDAO(): GitHubReposDAO
 
