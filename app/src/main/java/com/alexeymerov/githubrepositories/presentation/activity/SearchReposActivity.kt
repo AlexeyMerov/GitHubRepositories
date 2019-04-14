@@ -3,6 +3,7 @@ package com.alexeymerov.githubrepositories.presentation.activity
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -23,19 +24,21 @@ import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
+import com.alexeymerov.githubrepositories.utils.SPHelper
 import com.alexeymerov.githubrepositories.utils.debugLog
 import com.alexeymerov.githubrepositories.utils.errorLog
 import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
+import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_repos.imageRecycler
-import kotlinx.android.synthetic.main.activity_repos.progressBar
-import kotlinx.android.synthetic.main.activity_repos.searchToolbar
+import kotlinx.android.synthetic.main.activity_repositories.imageRecycler
+import kotlinx.android.synthetic.main.activity_repositories.progressBar
+import kotlinx.android.synthetic.main.activity_repositories.searchToolbar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -65,7 +68,7 @@ class SearchReposActivity : BaseActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_repos)
+		setContentView(R.layout.activity_repositories)
 		initViews()
 		initObservers()
 	}
@@ -127,6 +130,7 @@ class SearchReposActivity : BaseActivity() {
 		val searchView = searchMenu.findItem(R.id.action_filter_search)?.actionView as SearchView
 		searchView.isSubmitButtonEnabled = false
 		searchView.maxWidth = Integer.MAX_VALUE
+		searchView.onTextChanged { searchSubject.onNext(it) }
 
 		val closeButton = searchView.findViewById(R.id.search_close_btn) as ImageView
 		closeButton.setImageResource(R.drawable.ic_close_black)
@@ -140,9 +144,9 @@ class SearchReposActivity : BaseActivity() {
 			.filter { it.isNotEmpty() }
 			.debounce(500, TimeUnit.MILLISECONDS)
 			.subscribe {
-				lastQuery = it.toString()
+				lastQuery = it
 				paginationListener.resetState()
-
+				viewModel.searchRepos(it)
 			}
 	}
 
@@ -152,17 +156,18 @@ class SearchReposActivity : BaseActivity() {
 		orientation = RecyclerView.VERTICAL
 	}
 
-	private fun initRecyclerAdapter() = RepositoriesRecyclerAdapter(this, ::onRepoClicked)
+	private fun initRecyclerAdapter() = RepositoriesRecyclerAdapter(::onRepoClicked)
 
-	private fun onRepoClicked(entity: GHRepoEntity, view: View) {
-		//todo open link
+	private fun onRepoClicked(entity: GHRepoEntity) {
+		val uri = Uri.parse(entity.webUrl)
+		val intent = Intent(Intent.ACTION_VIEW, uri)
+		startActivity(intent)
 	}
 
 	private fun initRecycler() {
 		paginationListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
 				progressBar.visibility = View.VISIBLE
-
 			}
 		}
 		imageRecycler.also {
@@ -179,10 +184,7 @@ class SearchReposActivity : BaseActivity() {
 		})
 	}
 
-	private fun onAccountClicked() = when (isUserAuthorized) {
-		true -> logoutUser()
-		false -> loginGithub()
-	}
+	private fun onAccountClicked() = if (isUserAuthorized) logoutUser() else loginGithub()
 
 	private fun logoutUser() {
 		//todo are u sure
@@ -211,7 +213,8 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun onSuccessAuthorization(response: IdpResponse?) {
-		val userToken = response?.idpToken
+		val userToken = response?.idpToken!!
+		SPHelper.setShared("token", userToken)
 		debugLog(firebaseAuth.currentUser?.displayName)
 	}
 }

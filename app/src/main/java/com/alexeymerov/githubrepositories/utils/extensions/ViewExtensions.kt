@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 
 fun ViewGroup.inflate(layoutRes: Int): View = LayoutInflater.from(context).inflate(layoutRes, this, false)
 
@@ -31,4 +32,17 @@ private fun Activity.circleReveal(viewId: Int, needShow: Boolean) {
 		duration = 350L
 		start()
 	}
+}
+
+inline fun SearchView.onTextChanged(crossinline onEvent: (String) -> Unit) {
+	setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+		override fun onQueryTextSubmit(query: String?): Boolean {
+			return true
+		}
+
+		override fun onQueryTextChange(newText: String?): Boolean {
+			if (newText != null) onEvent(newText)
+			return true
+		}
+	})
 }

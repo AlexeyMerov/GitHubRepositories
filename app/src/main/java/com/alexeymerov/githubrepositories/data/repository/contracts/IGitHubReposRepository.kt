@@ -7,7 +7,8 @@ import io.reactivex.Flowable
 
 abstract class IGitHubReposRepository : BaseRepository() {
 
-	abstract fun searchRepositories(query: String, sortType: SORTING, pageNum: Int, perPage: Int)
+	abstract fun searchRepositories(query: String, sortType: SORTING, pageNum: Int, perPage: Int,
+									needRemoveLastItems: Boolean)
 
 	abstract fun getReposList(): Flowable<List<GHRepoDBEntity>>
 

@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.view.MenuItem
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import java.text.DecimalFormat
 
 interface AutoUpdatableAdapter<T> {
 	fun RecyclerView.Adapter<*>.autoNotify(oldList: List<T>, newList: List<T>) {
@@ -43,3 +44,12 @@ inline fun MenuItem.onExpandListener(crossinline onExpanded: () -> Unit, crossin
 		}
 	})
 }
+
+private val decimalFormat = DecimalFormat().apply {
+	isDecimalSeparatorAlwaysShown = false
+	applyPattern("#.#")
+}
+
+fun Int.formatM() = String.format("%sm", decimalFormat.format(this / 1000000.0))
+fun Int.formatK() = String.format("%sk", decimalFormat.format(this / 1000.0))
+

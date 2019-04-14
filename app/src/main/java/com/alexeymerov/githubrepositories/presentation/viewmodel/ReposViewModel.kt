@@ -15,7 +15,7 @@ class ReposViewModel
 	override fun searchRepos(query: String) = reposUseCase.searchRepositories(query)
 
 	override fun searchRepos(query: String, pageNum: Int, perPage: Int) {
-		reposUseCase.searchRepositories(query, pageNum = pageNum, perPage = perPage)
+		reposUseCase.searchRepositories(query, pageNum, perPage)
 	}
 
 	override fun onCleared() {

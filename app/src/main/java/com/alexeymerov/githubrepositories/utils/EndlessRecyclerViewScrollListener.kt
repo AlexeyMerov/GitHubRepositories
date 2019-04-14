@@ -25,7 +25,7 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
 	private var loading = true
 
 	// Sets the starting page index
-	private val startingPageIndex = 0
+	private val startingPageIndex = 1
 
 	private var mLayoutManager: RecyclerView.LayoutManager = layoutManager
 

@@ -7,6 +7,12 @@ import com.alexeymerov.githubrepositories.data.database.dao.GitHubReposDAO
 @Entity(tableName = GitHubReposDAO.TABLE_NAME)
 data class GHRepoDBEntity(
 		@PrimaryKey
-		val id: Long,
-		val name: String
+		val id: Int,
+		val repositoryName: String,
+		val description: String?,
+		val language: String?,
+		val webUrl: String,
+		val updatedAt: String,
+		val starsCount: Int,
+		val ownerLoginName: String
 )

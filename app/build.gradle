@@ -62,8 +62,6 @@ def buildOutputApkName(DomainObjectSet domainObjectSet) {
 
 ext {
     retrofit_version = '2.3.0'
-    anko_version = '0.10.4'
-    glide_version = '4.8.0'
     lifecycle_version = '2.1.0-alpha03'
     dagger_version = '2.22.1'
     version_room = '2.1.0-alpha06'
@@ -77,6 +75,7 @@ dependencies {
 
     debugImplementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
+    debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 
     // android
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
@@ -93,9 +92,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.0.0'
-
-    // rx libs
-    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
 
     // di
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -114,14 +110,6 @@ dependencies {
 
     //permissions with dsl
     implementation 'com.github.fondesa:kpermissions:1.0.0'
-
-    // anko
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
-
-    // glide
-    implementation "com.github.bumptech.glide:glide:$glide_version"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
-    kapt "com.github.bumptech.glide:compiler:$glide_version"
 
     // Firebase
     implementation "com.firebaseui:firebase-ui-auth:$firebase_room"

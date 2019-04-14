@@ -8,6 +8,8 @@ import com.alexeymerov.githubrepositories.domain.di.DaggerUseCaseComponent
 import com.alexeymerov.githubrepositories.domain.di.UseCaseModule
 import com.alexeymerov.githubrepositories.presentation.di.DaggerViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
+import com.alexeymerov.githubrepositories.utils.SPHelper
+import com.facebook.stetho.Stetho
 import com.google.firebase.FirebaseApp
 
 class App : Application() {
@@ -19,8 +21,10 @@ class App : Application() {
 
 	override fun onCreate() {
 		super.onCreate()
-		initDagger()
 		FirebaseApp.initializeApp(this)
+		SPHelper.init(this, "ghrepos")
+		Stetho.initializeWithDefaults(this)
+		initDagger()
 	}
 
 	private fun initDagger() {

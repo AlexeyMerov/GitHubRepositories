@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Module(includes = [BaseApiModule::class])
 class GitHubApiModule {
 
-	private val API_URL = "https://jsonplaceholder.typicode.com"
+	private val API_URL = "https://api.github.com/"
 
 	@Provides
 	@Singleton
