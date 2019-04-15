@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Git Hub Repositories</string>
+
+    <string name="github_client_id" translatable="false">87845b35ab129e40fa9d</string>
+    <string name="github_client_secret" translatable="false">8a20b4306e8bddfd3d4852c716e5ce28876270c3</string>
+    <string name="firebase_web_host" translatable="false">githubrepos-a1c90.firebaseapp.com</string>
+
+    <string name="toolbar_title">Repositories</string>
+    <string name="search">Search</string>
+    <string name="search_string">Search…</string>
+    <string name="account">Account</string>
+    <string name="language_title">Language:</string>
+    <string name="updated_title">Updated on</string>
+</resources>

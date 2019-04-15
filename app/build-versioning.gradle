@@ -1,0 +1,10 @@
+def versionMajor = 0
+def versionMinor = 1
+def versionPatch = 0
+def versionFeature = 1
+
+ext {
+    buildVersionCode = versionMajor * 100000 + versionMinor * 1000 + versionPatch * 100 + versionFeature
+    buildVersionName = "$versionMajor.$versionMinor.$versionPatch"
+    buildVersionFeatureSuffix = "-$versionFeature"
+}
