@@ -3,34 +3,33 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
-apply from: 'build-versioning.gradle'
-
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion buildVersions.compileSdk
+    buildToolsVersion buildVersions.buildTools
     defaultConfig {
-        applicationId "com.alexeymerov.githubrepositories"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode buildVersionCode
-        versionName buildVersionName
+        applicationId = names.applicationId
+        minSdkVersion buildVersions.minSdk
+        targetSdkVersion buildVersions.targetSdk
+        versionCode = buildVersions.buildCode
+        versionName = buildVersions.buildName
     }
     buildTypes {
         release {
-            debuggable false
+            debuggable = false
             shrinkResources = true
             minifyEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildOutputApkName(applicationVariants)
+            buildOutputApkName(applicationVariants, buildVersions.buildCode)
         }
         debug {
-            buildOutputApkName(applicationVariants)
+            buildOutputApkName(applicationVariants, buildVersions.buildCode)
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = buildVersions.javaCompability
+        targetCompatibility = buildVersions.javaCompability
     }
 
     lintOptions {
@@ -52,71 +51,54 @@ android {
     }
 }
 
-def buildOutputApkName(DomainObjectSet domainObjectSet) {
-    domainObjectSet.all { variant ->
-        variant.outputs.all { output ->
-            outputFileName = "GHS_${variant.baseName}_${buildVersionName}_" + new Date().format('(dd.MM.yy)_(HH)') + ".apk"
-        }
-    }
-}
-
-ext {
-    retrofit_version = '2.3.0'
-    lifecycle_version = '2.1.0-alpha03'
-    dagger_version = '2.22.1'
-    version_room = '2.1.0-alpha06'
-    firebase_room = '4.3.1'
-}
-
-
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.1.0-alpha05'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+    implementation "androidx.core:core-ktx:${versions.ktx}"
 
-    debugImplementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-    debugImplementation 'com.facebook.stetho:stetho:1.5.0'
-    debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+    debugImplementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp_logging}"
+    debugImplementation "com.facebook.stetho:stetho:${versions.stetho}"
+    debugImplementation "com.facebook.stetho:stetho-okhttp3:${versions.stetho}"
 
     // android
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
-    implementation "androidx.recyclerview:recyclerview:1.1.0-alpha04"
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation "com.google.android.material:material:1.1.0-alpha05"
+    implementation "androidx.appcompat:appcompat:${versions.appCompat}"
+    implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
+    implementation "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}"
+    implementation "com.google.android.material:material:${versions.material}"
 
     // retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-moshi:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
 
     // rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.0.0'
+    implementation "io.reactivex.rxjava2:rxjava:${versions.rxjava}"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxandroid}"
+    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxkotlin}"
 
     // di
-    implementation "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger:${versions.dagger}"
+    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
 
     // ViewModel and LiveData
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha04'
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-reactivestreams:2.1.0-alpha04"
+    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:${versions.lifecycle}"
 
     // Room
-    implementation "androidx.room:room-runtime:$version_room"
-    implementation "androidx.room:room-rxjava2:$version_room"
-    annotationProcessor "androidx.room:room-compiler:$version_room"
-    kapt "androidx.room:room-compiler:$version_room"
+    implementation "androidx.room:room-runtime:${versions.room}"
+    implementation "androidx.room:room-rxjava2:${versions.room}"
+    annotationProcessor "androidx.room:room-compiler:${versions.room}"
+    kapt "androidx.room:room-compiler:${versions.room}"
 
     //permissions with dsl
-    implementation 'com.github.fondesa:kpermissions:1.0.0'
+    implementation "com.github.fondesa:kpermissions:${versions.kpermissions}"
 
     // Firebase
-    implementation "com.firebaseui:firebase-ui-auth:$firebase_room"
-    implementation "com.firebaseui:firebase-ui-auth-github:$firebase_room"
+    implementation "com.firebaseui:firebase-ui-auth:${versions.firebase}"
+    implementation "com.firebaseui:firebase-ui-auth-github:${versions.firebase}"
 
     // Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
+    implementation "com.crashlytics.sdk.android:crashlytics:${versions.crashlytics}"
 
 
 }

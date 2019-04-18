@@ -1,0 +1,17 @@
+def versionMajor = 0
+def versionMinor = 1
+def versionPatch = 0
+def versionFeature = 1
+
+ext.buildVersions = [
+        buildCode         : (versionMajor * 100000) + (versionMinor * 1000) + (versionPatch * 100) + versionFeature,
+        buidlName         : "$versionMajor.$versionMinor.$versionPatch",
+        buildFeatureSuffix: "-$versionFeature",
+
+        minSdk            : 21,
+        compileSdk        : 28,
+        targetSdk         : 28,
+        buildTools        : '28.0.3',
+
+        javaCompability   : '1.8',
+]
