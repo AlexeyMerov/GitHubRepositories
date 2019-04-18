@@ -1,0 +1,12 @@
+ext.names = [
+        applicationId: "com.alexeymerov.githubrepositories"
+]
+
+ext.buildOutputApkName = { domainObjectSet, buildCode ->
+    domainObjectSet.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "GHR_${variant.baseName}_${buildCode}_" + new Date().format('(dd.MM.yy)_(HH)') + ".apk"
+        }
+    }
+}
+
