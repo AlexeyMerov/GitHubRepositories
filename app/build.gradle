@@ -7,6 +7,7 @@ apply plugin: 'io.fabric'
 android {
     compileSdkVersion buildVersions.compileSdk
     buildToolsVersion buildVersions.buildTools
+
     defaultConfig {
         applicationId = names.applicationId
         minSdkVersion buildVersions.minSdk
@@ -14,6 +15,7 @@ android {
         versionCode = buildVersions.buildCode
         versionName = buildVersions.buildName
     }
+
     buildTypes {
         release {
             debuggable = false
