@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 class BaseApiModule {
 
 	@Provides
-	fun provideOkHttpClientBuilder() = OkHttpClient.Builder()
+	fun provideOkHttpClientBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()
 		.connectionPool(ConnectionPool(5, 30, SECONDS))
 		.connectTimeout(30, SECONDS)
 		.readTimeout(30, SECONDS)
@@ -27,7 +27,7 @@ class BaseApiModule {
 			httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 			addInterceptor(httpLoggingInterceptor)
 			addNetworkInterceptor(StethoInterceptor())
-		}!!
+		}
 
 	@Provides
 	fun provideOkHttpClient(clientBuilder: OkHttpClient.Builder): OkHttpClient = clientBuilder.build()
@@ -41,13 +41,13 @@ class BaseApiModule {
 	@Provides
 	fun provideRetrofitBuilder(client: OkHttpClient,
 							   converterFactory: Converter.Factory,
-							   callAdapterFactory: CallAdapter.Factory) = Retrofit.Builder()
+							   callAdapterFactory: CallAdapter.Factory): Retrofit.Builder = Retrofit.Builder()
 		.client(client)
 		.addConverterFactory(converterFactory)
-		.addCallAdapterFactory(callAdapterFactory)!!
+		.addCallAdapterFactory(callAdapterFactory)
 
 	@Provides
-	fun provideRetrofit(retrofitBuilder: Retrofit.Builder, serverUrl: String) =
-		retrofitBuilder.baseUrl(serverUrl).build()!!
+	fun provideRetrofit(retrofitBuilder: Retrofit.Builder, serverUrl: String): Retrofit =
+		retrofitBuilder.baseUrl(serverUrl).build()
 
 }

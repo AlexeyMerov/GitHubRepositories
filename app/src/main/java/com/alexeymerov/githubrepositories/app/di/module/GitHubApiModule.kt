@@ -23,7 +23,8 @@ class GitHubApiModule {
 
 	@Provides
 	@Singleton
-	fun provideApiService(retrofit: Retrofit, serviceClass: Class<GitHubApiService>) = retrofit.create(serviceClass)!!
+	fun provideApiService(retrofit: Retrofit, serviceClass: Class<GitHubApiService>): GitHubApiService =
+		retrofit.create(serviceClass)
 
 	@Provides
 	@Singleton
