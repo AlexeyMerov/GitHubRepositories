@@ -1,12 +1,15 @@
 package com.alexeymerov.githubrepositories.data.server.pojo.response
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class SearchResponse(
 		@Json(name = "items")
 		val items: List<RepositoryItemResponse>
 )
 
+@JsonClass(generateAdapter = true)
 data class RepositoryItemResponse(
 		@Json(name = "id")
 		val id: Int,
@@ -33,6 +36,7 @@ data class RepositoryItemResponse(
 		val starsCount: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Owner(
 		@Json(name = "login")
 		val loginName: String
