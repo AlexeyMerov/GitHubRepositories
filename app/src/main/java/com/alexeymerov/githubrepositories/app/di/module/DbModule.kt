@@ -15,8 +15,8 @@ class DbModule {
 	@Singleton
 	fun provideGitHubReposDatabase(context: Application) =
 		Room.databaseBuilder(context, GitHubReposDatabase::class.java, "github_repos_database")
-			.fallbackToDestructiveMigration()
-			.build()
+				.fallbackToDestructiveMigration()
+				.build()
 
 	@Provides
 	@Singleton

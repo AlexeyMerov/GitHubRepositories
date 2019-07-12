@@ -9,14 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.alexeymerov.githubrepositories.R
-import com.alexeymerov.githubrepositories.app.App
+import com.alexeymerov.githubrepositories.app.DaggerApp
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 
 abstract class BaseActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		injectActivity(App.viewModelComponent)
+		injectActivity(DaggerApp.viewModelComponent)
 	}
 
 	abstract fun injectActivity(component: ViewModelComponent)

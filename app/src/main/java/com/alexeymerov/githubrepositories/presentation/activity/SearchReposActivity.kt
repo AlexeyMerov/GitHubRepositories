@@ -141,13 +141,13 @@ class SearchReposActivity : BaseActivity() {
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
 
 		searchDisposable = searchSubject
-			.filter { it.isNotEmpty() }
-			.debounce(500, TimeUnit.MILLISECONDS)
-			.subscribe {
-				lastQuery = it
-				paginationListener.resetState()
-				viewModel.searchRepos(it)
-			}
+				.filter { it.isNotEmpty() }
+				.debounce(500, TimeUnit.MILLISECONDS)
+				.subscribe {
+					lastQuery = it
+					paginationListener.resetState()
+					viewModel.searchRepos(it)
+				}
 	}
 
 	private fun initLayoutManager() = LinearLayoutManager(this).apply {
@@ -195,9 +195,9 @@ class SearchReposActivity : BaseActivity() {
 		val gitHubProvider = AuthUI.IdpConfig.GitHubBuilder().build()
 		val providers = arrayListOf(gitHubProvider)
 		val intent = AuthUI.getInstance()
-			.createSignInIntentBuilder()
-			.setAvailableProviders(providers)
-			.build()
+				.createSignInIntentBuilder()
+				.setAvailableProviders(providers)
+				.build()
 
 		startActivityForResult(intent, RC_SIGN_IN)
 	}
