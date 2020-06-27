@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexeymerov.githubrepositories.R
-import com.alexeymerov.githubrepositories.R.string
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
@@ -136,7 +135,7 @@ class SearchReposActivity : BaseActivity() {
 		closeButton.setImageResource(R.drawable.ic_close_black)
 
 		val txtSearch = searchView.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
-		txtSearch.hint = getString(string.search_string)
+		txtSearch.hint = getString(R.string.search_string)
 		txtSearch.setHintTextColor(Color.DKGRAY)
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
 
@@ -167,7 +166,10 @@ class SearchReposActivity : BaseActivity() {
 	private fun initRecycler() {
 		paginationListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
 			override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-				progressBar.visibility = View.VISIBLE
+				if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
+					progressBar.visibility = View.VISIBLE
+					viewModel.searchRepos(lastQuery, page, 15)
+				}
 			}
 		}
 		imageRecycler.also {

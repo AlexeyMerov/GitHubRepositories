@@ -16,7 +16,7 @@ class ReposUseCase @Inject constructor(private val repository: IGitHubReposRepos
 	}
 
 	override fun searchRepositories(query: String, pageNum: Int, perPage: Int) {
-//		searchRepositories(query, pageNum, perPage, false)
+		searchRepositories(query, pageNum, perPage, false)
 	}
 
 	private fun searchRepositories(query: String, pageNum: Int, perPage: Int, needRemoveLastItems: Boolean) {

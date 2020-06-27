@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 object SPHelper {
 
 	lateinit var sharedPrefs: SharedPreferences
+		private set
 
 	fun init(context: Context, sharedName: String) {
 		sharedPrefs = context.getSharedPreferences(sharedName, Context.MODE_PRIVATE)

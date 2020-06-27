@@ -32,7 +32,7 @@ class RepositoriesRecyclerAdapter() : BaseRecyclerAdapter<GHRepoEntity, ViewHold
 
 	abstract inner class ViewHolder(containerView: View) : BaseViewHolder<GHRepoEntity>(containerView) {
 		override fun bind(currentItem: GHRepoEntity) {
-			// do something base things
+			// do some base things
 		}
 	}
 
