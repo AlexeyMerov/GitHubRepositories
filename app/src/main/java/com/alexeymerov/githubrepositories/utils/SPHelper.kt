@@ -43,7 +43,7 @@ object SPHelper {
 				is Boolean -> getBoolean(key, defValue)
 				is Long -> getLong(key, defValue)
 				is Int -> getInt(key, defValue)
-				is String -> getString(key, defValue)
+				is String -> getString(key, defValue)!!
 				is Float -> getFloat(key, defValue)
 				else -> throw Exception("Cannot cast to any type")
 			}

@@ -39,7 +39,7 @@ class RepositoriesRecyclerAdapter() : BaseRecyclerAdapter<GHRepoEntity, ViewHold
 	inner class RepositoryViewHolder(containerView: View, onItemClick: (Int) -> Unit) : ViewHolder(containerView) {
 
 		init {
-			containerView.setOnClickListener { onItemClick(adapterPosition) }
+			containerView.setOnClickListener { onItemClick(bindingAdapterPosition) }
 		}
 
 		private val starsCount_tv = containerView.findViewById<TextView>(R.id.starsCount_tv)
