@@ -19,10 +19,10 @@ class GitHubReposRepository
 	override fun searchRepositories(query: String, sortType: SORTING, pageNum: Int, perPage: Int,
 									needRemoveLastItems: Boolean) {
 		gitHubCommunicator.searchRepositories(query, sortType, pageNum, perPage)
-			.compose(singleTransformer())
-			.map(reposMapper::mapFrom)
-			.subscribe({ handleSuccessSearch(it, needRemoveLastItems) }, ::handleFailedSearch)
-			.trackDisposable()
+				.compose(singleTransformer())
+				.map(reposMapper::mapFrom)
+				.subscribe({ handleSuccessSearch(it, needRemoveLastItems) }, ::handleFailedSearch)
+				.trackDisposable()
 	}
 
 	private fun handleSuccessSearch(reposEntity: List<GHRepoDBEntity>, needRemoveLastItems: Boolean) {

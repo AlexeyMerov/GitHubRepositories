@@ -9,7 +9,7 @@ private val PRETTY_DATE_FORMAT = "MMM dd, yyyy"
 
 private fun Date.getFormattedString(pattern: String) = SimpleDateFormat(pattern, Locale.getDefault()).format(this)
 
-fun getDateFromString(dateString: String): Date = SimpleDateFormat(BASE_SERVER_FORMAT, Locale.ENGLISH).parse(dateString)
+fun getDateFromString(dateString: String): Date = SimpleDateFormat(BASE_SERVER_FORMAT, Locale.ENGLISH).parse(dateString)!!
 
 fun formatIsoDate(dateString: String) = dateString.replace("[TZ]".toRegex(), " ")
 

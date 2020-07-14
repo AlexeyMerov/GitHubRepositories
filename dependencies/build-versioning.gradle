@@ -9,9 +9,9 @@ ext.buildVersions = [
         buildFeatureSuffix: "-$versionFeature",
 
         minSdk            : 21,
-        compileSdk        : 28,
-        targetSdk         : 28,
-        buildTools        : '28.0.3',
+        compileSdk        : 29,
+        targetSdk         : 29,
+        buildTools        : '29.0.2',
 
         javaCompability   : '1.8',
 ]

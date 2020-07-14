@@ -8,8 +8,8 @@ abstract class BaseViewModel : ViewModel() {
 
 	protected fun <T> singleTransformer(): SingleTransformer<T, T> = SingleTransformer {
 		it
-			.subscribeOn(Schedulers.io())
-			.observeOn(Schedulers.io())
+				.subscribeOn(Schedulers.io())
+				.observeOn(Schedulers.io())
 	}
 
 }

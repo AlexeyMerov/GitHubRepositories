@@ -7,16 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.alexeymerov.githubrepositories.R
-import com.alexeymerov.githubrepositories.app.App
+import com.alexeymerov.githubrepositories.app.DaggerApp
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 
 abstract class BaseActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		injectActivity(App.viewModelComponent)
+		injectActivity(DaggerApp.viewModelComponent)
 	}
 
 	abstract fun injectActivity(component: ViewModelComponent)
@@ -51,7 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
 	}
 
 	inline fun <reified T : ViewModel> getViewModel(factory: ViewModelProvider.Factory): T {
-		return ViewModelProviders.of(this, factory).get(T::class.java)
+		return ViewModelProvider(this, factory).get(T::class.java)
 	}
 
 }
