@@ -5,7 +5,8 @@ import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService.SORTI
 import com.alexeymerov.githubrepositories.domain.mapper.UseCaseReposMapper
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ReposUseCase @Inject constructor(private val repository: IGitHubReposRepository,
@@ -23,7 +24,7 @@ class ReposUseCase @Inject constructor(private val repository: IGitHubReposRepos
 		repository.searchRepositories(query, STARS, pageNum, perPage, needRemoveLastItems)
 	}
 
-	override fun getReposList(): Flowable<List<GHRepoEntity>> = repository.getReposList().map(mapper::mapFrom)
+	override fun getReposList(): Flow<List<GHRepoEntity>> = repository.getReposList().map(mapper::mapFrom)
 
 	override fun clean() = repository.clean()
 }

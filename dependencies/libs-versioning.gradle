@@ -1,29 +1,29 @@
 ext.versions = [
 
-        kotlin          : '1.3.72',
-        gradle          : '4.0.0',
+        kotlin          : '1.4.10',
+        gradle          : '4.1.0',
         googleServices  : '4.3.3',
         fabric          : '1.31.2',
 
-        ktx             : '1.5.0-alpha01',
+        ktx             : '1.5.0-alpha04',
 
-        okhttp_logging  : '4.7.2',
+        okhttp_logging  : '4.9.0',
         stetho          : '1.5.1',
 
-        appCompat       : '1.3.0-alpha01',
-        recyclerview    : '1.2.0-alpha04',
-        constraintlayout: '2.0.0-beta8',
-        material        : '1.3.0-alpha01',
+        appCompat       : '1.3.0-alpha02',
+        recyclerview    : '1.2.0-alpha06',
+        constraintlayout: '2.0.2',
+        material        : '1.3.0-alpha03',
 
-        rxjava          : '2.2.9',
-        rxandroid       : '2.1.0',
-        rxkotlin        : '2.0.0',
+        rxjava          : '2.2.19',
+        rxandroid       : '2.1.1',
+        rxkotlin        : '2.4.0',
 
         retrofit        : '2.9.0',
-        moshi           : '1.9.3',
+        moshi           : '1.11.0',
         lifecycle       : '2.2.0',
-        dagger          : '2.28.1',
-        room            : '2.3.0-alpha01',
+        dagger          : '2.29.1',
+        room            : '2.3.0-alpha03',
         firebase        : '4.3.1',
 
         kpermissions    : '1.0.0',

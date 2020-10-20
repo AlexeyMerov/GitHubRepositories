@@ -1,6 +1,7 @@
 package com.alexeymerov.githubrepositories.presentation.viewmodel
 
-import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import javax.inject.Inject
@@ -8,7 +9,7 @@ import javax.inject.Inject
 class ReposViewModel
 @Inject constructor(private val reposUseCase: IReposUseCase) : IReposViewModel() {
 
-	private val repositoriesLiveData by lazy { LiveDataReactiveStreams.fromPublisher(reposUseCase.getReposList()) }
+	private val repositoriesLiveData by lazy { reposUseCase.getReposList().asLiveData(viewModelScope.coroutineContext) }
 
 	override fun getReposList() = repositoriesLiveData
 

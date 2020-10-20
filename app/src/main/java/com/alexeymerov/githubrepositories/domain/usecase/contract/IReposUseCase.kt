@@ -1,7 +1,7 @@
 package com.alexeymerov.githubrepositories.domain.usecase.contract
 
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 interface IReposUseCase : IUseCase<GHRepoEntity> {
 
@@ -9,6 +9,6 @@ interface IReposUseCase : IUseCase<GHRepoEntity> {
 
 	fun searchRepositories(query: String, pageNum: Int, perPage: Int)
 
-	fun getReposList(): Flowable<List<GHRepoEntity>>
+	fun getReposList(): Flow<List<GHRepoEntity>>
 
 }

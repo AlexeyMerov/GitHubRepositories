@@ -3,7 +3,7 @@ package com.alexeymerov.githubrepositories.data.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.alexeymerov.githubrepositories.data.database.entity.GHRepoDBEntity
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class GitHubReposDAO : BaseDAO<GHRepoDBEntity>() {
@@ -18,7 +18,7 @@ abstract class GitHubReposDAO : BaseDAO<GHRepoDBEntity>() {
 	abstract fun getAll(): List<GHRepoDBEntity>
 
 	@Query("SELECT * FROM $TABLE_NAME ORDER BY $STARS_ROW DESC")
-	abstract fun getAllLive(): Flowable<List<GHRepoDBEntity>>
+	abstract fun getAllLive(): Flow<List<GHRepoDBEntity>>
 
 	@Query("DELETE FROM $TABLE_NAME")
 	abstract fun removeAll()
