@@ -32,13 +32,14 @@ import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
 import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_repositories.imageRecycler
 import kotlinx.android.synthetic.main.activity_repositories.progressBar
 import kotlinx.android.synthetic.main.activity_repositories.searchToolbar
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SearchReposActivity : BaseActivity() {
@@ -49,14 +50,12 @@ class SearchReposActivity : BaseActivity() {
 
 	private val reposRecyclerAdapter by lazy { initRecyclerAdapter() }
 	private val layoutManager by lazy { initLayoutManager() }
-	private val searchSubject by lazy { PublishSubject.create<String>() }
 
 	private val authHelper = AuthorizationHelper(WeakReference(this))
 
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
 	private lateinit var lastQuery: String
-	private lateinit var searchDisposable: Disposable
 	private lateinit var paginationListener: EndlessRecyclerViewScrollListener
 	private lateinit var accountItem: MenuItem
 
@@ -92,7 +91,7 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	override fun onDestroy() {
-		searchDisposable.dispose()
+		searchJob?.cancel()
 		authHelper.onDestroy()
 		super.onDestroy()
 	}
@@ -123,11 +122,20 @@ class SearchReposActivity : BaseActivity() {
 		initSearchView()
 	}
 
+	private var searchJob: Job? = null
 	private fun initSearchView() {
 		val searchView = searchMenu.findItem(R.id.action_filter_search)?.actionView as SearchView
 		searchView.isSubmitButtonEnabled = false
 		searchView.maxWidth = Integer.MAX_VALUE
-		searchView.onTextChanged { searchSubject.onNext(it) }
+		searchView.onTextChanged {
+			searchJob?.cancel("Cancel on a new query")
+			searchJob = launch {
+				delay(500L)
+				lastQuery = it
+				viewModel.searchRepos(it)
+				paginationListener.resetState()
+			}
+		}
 
 		val closeButton = searchView.findViewById(R.id.search_close_btn) as ImageView
 		closeButton.setImageResource(R.drawable.ic_close_black)
@@ -136,15 +144,6 @@ class SearchReposActivity : BaseActivity() {
 		txtSearch.hint = getString(R.string.search_string)
 		txtSearch.setHintTextColor(Color.DKGRAY)
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
-
-		searchDisposable = searchSubject
-				.filter { it.isNotEmpty() }
-				.debounce(500, TimeUnit.MILLISECONDS)
-				.subscribe {
-					lastQuery = it
-					paginationListener.resetState()
-					viewModel.searchRepos(it)
-				}
 	}
 
 	private fun initLayoutManager() = LinearLayoutManager(this).apply {

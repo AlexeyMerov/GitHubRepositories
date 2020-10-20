@@ -10,13 +10,22 @@ import androidx.lifecycle.ViewModelProvider
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.app.DaggerApp
 import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		injectActivity(DaggerApp.viewModelComponent)
 	}
+
+	private val mainJob = Job()
+	override val coroutineContext: CoroutineContext
+		get() = Dispatchers.IO + mainJob
 
 	abstract fun injectActivity(component: ViewModelComponent)
 
@@ -37,6 +46,11 @@ abstract class BaseActivity : AppCompatActivity() {
 		supportActionBar?.apply {
 			if (isShowing) hide() else show()
 		}
+	}
+
+	override fun onDestroy() {
+		cancel()
+		super.onDestroy()
 	}
 
 	override fun startActivity(intent: Intent) {
