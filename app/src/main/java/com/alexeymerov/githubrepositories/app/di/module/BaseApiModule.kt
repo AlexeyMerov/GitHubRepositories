@@ -1,6 +1,7 @@
 package com.alexeymerov.githubrepositories.app.di.module
 
 import com.facebook.stetho.okhttp3.StethoInterceptor
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.ConnectionPool
@@ -9,7 +10,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.CallAdapter
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -19,9 +19,6 @@ class BaseApiModule {
 	@Provides
 	fun provideOkHttpClientBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()
 			.connectionPool(ConnectionPool(5, 30, SECONDS))
-			.connectTimeout(30, SECONDS)
-			.readTimeout(30, SECONDS)
-			.writeTimeout(30, SECONDS)
 			.apply {
 				val httpLoggingInterceptor = HttpLoggingInterceptor()
 				httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -36,7 +33,7 @@ class BaseApiModule {
 	fun provideJsonConverter(): Converter.Factory = MoshiConverterFactory.create()
 
 	@Provides
-	fun provideCallAdapterFactory(): CallAdapter.Factory = RxJava2CallAdapterFactory.create()
+	fun provideCallAdapterFactory(): CallAdapter.Factory = CoroutineCallAdapterFactory()
 
 	@Provides
 	fun provideRetrofitBuilder(client: OkHttpClient,
