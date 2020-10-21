@@ -1,37 +1,28 @@
 package com.alexeymerov.githubrepositories.presentation.di
 
+import androidx.hilt.lifecycle.ViewModelAssistedFactory
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.alexeymerov.githubrepositories.presentation.di.scope.ViewModelKey
-import com.alexeymerov.githubrepositories.presentation.viewmodel.ReposViewModel
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.ReposViewModel_AssistedFactory
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.multibindings.IntoMap
-import javax.inject.Inject
-import javax.inject.Provider
+import dagger.multibindings.StringKey
 
 @Module
+@InstallIn(ActivityRetainedComponent::class)
 abstract class ViewModelModule {
 
-	@Binds
-	abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+	// https://github.com/google/dagger/issues/1972
+	companion object {
+
+		private const val PACKAGE_NAME = "com.alexeymerov.githubrepositories.presentation.viewmodel.contract."
+	}
 
 	@Binds
 	@IntoMap
-	@ViewModelKey(IReposViewModel::class)
-	abstract fun bindReposViewModel(viewModel: ReposViewModel): ViewModel
+	@StringKey(PACKAGE_NAME + "IReposViewModel")
+	abstract fun bindReposViewModel(factory: ReposViewModel_AssistedFactory): ViewModelAssistedFactory<out ViewModel>
 
-}
-
-class ViewModelFactory
-@Inject constructor(private val viewModels: MutableMap<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>)
-	: ViewModelProvider.Factory {
-
-	@Suppress("UNCHECKED_CAST")
-	override fun <T : ViewModel> create(modelClass: Class<T>): T {
-		val viewModelProvider = viewModels[modelClass]
-								?: throw IllegalArgumentException("model class $modelClass not found")
-		return viewModelProvider.get() as T
-	}
 }

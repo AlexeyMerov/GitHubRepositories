@@ -9,10 +9,10 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexeymerov.githubrepositories.R
@@ -21,7 +21,6 @@ import com.alexeymerov.githubrepositories.R.string
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
-import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
@@ -32,6 +31,7 @@ import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
 import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_repositories.imageRecycler
 import kotlinx.android.synthetic.main.activity_repositories.progressBar
 import kotlinx.android.synthetic.main.activity_repositories.searchToolbar
@@ -40,13 +40,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchReposActivity : BaseActivity() {
 
-	@Inject
-	lateinit var viewModelFactory: ViewModelProvider.Factory
-	private val viewModel by lazy { getViewModel<IReposViewModel>(viewModelFactory) }
+	private val viewModel by viewModels<IReposViewModel>()
 
 	private val reposRecyclerAdapter by lazy { initRecyclerAdapter() }
 	private val layoutManager by lazy { initLayoutManager() }
@@ -67,8 +65,6 @@ class SearchReposActivity : BaseActivity() {
 		initViews()
 		initObservers()
 	}
-
-	override fun injectActivity(component: ViewModelComponent) = component.injectActivity(this)
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)

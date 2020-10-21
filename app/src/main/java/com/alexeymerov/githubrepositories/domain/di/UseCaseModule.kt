@@ -1,22 +1,19 @@
 package com.alexeymerov.githubrepositories.domain.di
 
-import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubReposRepository
-import com.alexeymerov.githubrepositories.domain.mapper.UseCaseReposMapper
 import com.alexeymerov.githubrepositories.domain.usecase.ReposUseCase
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 
 @Module
-class UseCaseModule {
+@InstallIn(ActivityRetainedComponent::class)
+abstract class UseCaseModule {
 
-	@Provides
-	@UseCaseScope
-	fun provideMapper() = UseCaseReposMapper()
-
-	@Provides
-	@UseCaseScope
-	fun provideReposUseCase(gitHubReposRepository: IGitHubReposRepository, useCaseReposMapper: UseCaseReposMapper)
-			: IReposUseCase = ReposUseCase(gitHubReposRepository, useCaseReposMapper)
+	@Binds
+	@ActivityRetainedScoped
+	abstract fun provideReposUseCase(reposUseCase: ReposUseCase): IReposUseCase
 
 }

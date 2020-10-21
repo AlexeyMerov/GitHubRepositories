@@ -6,8 +6,9 @@ import com.alexeymerov.githubrepositories.utils.extensions.formatK
 import com.alexeymerov.githubrepositories.utils.extensions.formatM
 import com.alexeymerov.githubrepositories.utils.extensions.getDateFromString
 import com.alexeymerov.githubrepositories.utils.extensions.getPrettyDateString
+import javax.inject.Inject
 
-class UseCaseReposMapper {
+class UseCaseReposMapper @Inject constructor() {
 
 	fun mapFrom(list: List<GHRepoDBEntity>): List<GHRepoEntity> {
 		val resultList = ArrayList<GHRepoEntity>(list.size)

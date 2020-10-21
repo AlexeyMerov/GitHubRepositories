@@ -4,8 +4,9 @@ import com.alexeymerov.githubrepositories.data.database.entity.GHRepoDBEntity
 import com.alexeymerov.githubrepositories.data.server.pojo.response.RepositoryItemResponse
 import com.alexeymerov.githubrepositories.data.server.pojo.response.SearchResponse
 import com.alexeymerov.githubrepositories.utils.extensions.formatIsoDate
+import javax.inject.Inject
 
-class ResponseMapper {
+class ResponseMapper @Inject constructor() {
 
 	fun mapFrom(response: SearchResponse): List<GHRepoDBEntity> {
 		val responseItems = response.items
