@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @InstallIn(ApplicationComponent::class)
 @Module(includes = [BaseApiModule::class])
-class GitHubApiModule {
+object GitHubApiModule {
 
 	private val API_URL = "https://api.github.com/"
 

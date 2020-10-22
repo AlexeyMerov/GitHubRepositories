@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 @Module
 @InstallIn(ApplicationComponent::class)
-class BaseApiModule {
+object BaseApiModule {
 
 	@Provides
 	fun provideOkHttpClientBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()

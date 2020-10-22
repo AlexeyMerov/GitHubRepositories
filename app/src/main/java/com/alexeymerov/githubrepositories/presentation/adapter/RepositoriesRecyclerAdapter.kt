@@ -7,14 +7,13 @@ import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter.ViewHolder
 import com.alexeymerov.githubrepositories.utils.extensions.inflate
+import dagger.hilt.android.scopes.ActivityRetainedScoped
+import javax.inject.Inject
 
-class RepositoriesRecyclerAdapter() : BaseRecyclerAdapter<GHRepoEntity, ViewHolder>() {
+@ActivityRetainedScoped
+class RepositoriesRecyclerAdapter @Inject constructor() : BaseRecyclerAdapter<GHRepoEntity, ViewHolder>() {
 
-	private lateinit var onRepoClicked: (GHRepoEntity) -> Unit
-
-	constructor(onImageClicked: (GHRepoEntity) -> Unit) : this() {
-		onRepoClicked = onImageClicked
-	}
+	lateinit var onRepoClicked: (GHRepoEntity) -> Unit
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
 		RepositoryViewHolder(parent.inflate(R.layout.item_repository)) { onRepoClicked(items[it]) }

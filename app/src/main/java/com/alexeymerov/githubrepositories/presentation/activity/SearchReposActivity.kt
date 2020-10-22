@@ -12,9 +12,7 @@ import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.R.drawable
 import com.alexeymerov.githubrepositories.R.string
@@ -23,10 +21,13 @@ import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyc
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper
+import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Fail
+import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Success
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
 import com.alexeymerov.githubrepositories.utils.SPHelper
 import com.alexeymerov.githubrepositories.utils.createAlert
 import com.alexeymerov.githubrepositories.utils.debugLog
+import com.alexeymerov.githubrepositories.utils.errorLog
 import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
@@ -39,37 +40,43 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchReposActivity : BaseActivity() {
 
 	private val viewModel by viewModels<IReposViewModel>()
 
-	private val reposRecyclerAdapter by lazy { initRecyclerAdapter() }
-	private val layoutManager by lazy { initLayoutManager() }
+	@Inject
+	lateinit var reposRecyclerAdapter: RepositoriesRecyclerAdapter
 
-	private val authHelper = AuthorizationHelper(WeakReference(this))
+	@Inject
+	lateinit var layoutManager: LinearLayoutManager
+
+	@Inject
+	lateinit var paginationListener: EndlessRecyclerViewScrollListener
 
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
 	private lateinit var lastQuery: String
-	private lateinit var paginationListener: EndlessRecyclerViewScrollListener
 	private lateinit var accountItem: MenuItem
 
+	private lateinit var authHelper: AuthorizationHelper
+
 	private var isInSearch = false
+	private var searchJob: Job? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_repositories)
-		initViews()
 		initObservers()
+		initViews()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)
 		accountItem = menu.findItem(R.id.action_login_logout)
-		if (authHelper.isUserAuthorized) accountItem.icon = ContextCompat.getDrawable(this, R.drawable.ic_logout)
+		changeAccountIcon(authHelper.isUserAuthorized)
 		return true
 	}
 
@@ -77,8 +84,9 @@ class SearchReposActivity : BaseActivity() {
 		when (item.itemId) {
 			R.id.action_search -> onSearchClicked()
 			R.id.action_login_logout -> onAccountClicked()
+			else -> super.onOptionsItemSelected(item)
 		}
-		return super.onOptionsItemSelected(item)
+		return true
 	}
 
 	private fun onSearchClicked() {
@@ -88,12 +96,17 @@ class SearchReposActivity : BaseActivity() {
 
 	override fun onDestroy() {
 		searchJob?.cancel()
-		authHelper.onDestroy()
 		super.onDestroy()
 	}
 
+	private fun initObservers() {
+		authHelper = AuthorizationHelper(activityResultRegistry)
+		lifecycle.addObserver(authHelper)
+		viewModel.getReposList().observe(this, { reposRecyclerAdapter.items = it })
+	}
+
 	private fun initViews() {
-		initToolbar(getString(R.string.toolbar_title))
+		initToolbar(getString(string.toolbar_title))
 		initSearchToolbar()
 		initRecycler()
 	}
@@ -118,37 +131,30 @@ class SearchReposActivity : BaseActivity() {
 		initSearchView()
 	}
 
-	private var searchJob: Job? = null
 	private fun initSearchView() {
 		val searchView = searchMenu.findItem(R.id.action_filter_search)?.actionView as SearchView
 		searchView.isSubmitButtonEnabled = false
 		searchView.maxWidth = Integer.MAX_VALUE
-		searchView.onTextChanged {
-			searchJob?.cancel("Cancel on a new query")
-			searchJob = launch {
-				delay(500L)
-				lastQuery = it
-				viewModel.searchRepos(it)
-				paginationListener.resetState()
-			}
-		}
+		searchView.onTextChanged(::onSearchTextChanged)
 
 		val closeButton = searchView.findViewById(R.id.search_close_btn) as ImageView
-		closeButton.setImageResource(R.drawable.ic_close_black)
+		closeButton.setImageResource(drawable.ic_close_black)
 
 		val txtSearch = searchView.findViewById(R.id.search_src_text) as EditText
-		txtSearch.hint = getString(R.string.search_string)
+		txtSearch.hint = getString(string.search_string)
 		txtSearch.setHintTextColor(Color.DKGRAY)
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
 	}
 
-	private fun initLayoutManager() = LinearLayoutManager(this).apply {
-		isMeasurementCacheEnabled = true
-		isItemPrefetchEnabled = true
-		orientation = RecyclerView.VERTICAL
+	private fun onSearchTextChanged(it: String) {
+		searchJob?.cancel("Cancel on a new query")
+		searchJob = launch {
+			delay(500L)
+			lastQuery = it
+			viewModel.searchRepos(it)
+			paginationListener.resetState()
+		}
 	}
-
-	private fun initRecyclerAdapter() = RepositoriesRecyclerAdapter(::onRepoClicked)
 
 	private fun onRepoClicked(entity: GHRepoEntity) {
 		val uri = Uri.parse(entity.webUrl)
@@ -157,26 +163,21 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun initRecycler() {
-		paginationListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
-			override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-				if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
-					progressBar.visibility = View.VISIBLE
-					viewModel.searchRepos(lastQuery, page, 15)
-				}
-			}
-		}
+		reposRecyclerAdapter.onRepoClicked = ::onRepoClicked
+
 		imageRecycler.also {
 			it.setItemViewCacheSize(30)
 			it.layoutManager = layoutManager
 			it.adapter = reposRecyclerAdapter
 			it.addOnScrollListener(paginationListener)
 		}
-	}
 
-	private fun initObservers() {
-		viewModel.getReposList().observe(this, Observer {
-			reposRecyclerAdapter.items = it
-		})
+		paginationListener.onLoadMore = { page, _, _ ->
+			if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
+				progressBar.visibility = View.VISIBLE
+				viewModel.searchRepos(lastQuery, page, 15)
+			}
+		}
 	}
 
 	private fun onAccountClicked() {
@@ -185,17 +186,30 @@ class SearchReposActivity : BaseActivity() {
 		} else loginUser()
 	}
 
-	private fun loginUser() {
-		authHelper.loginGithub() { userToken ->
-			accountItem.icon = ContextCompat.getDrawable(this, drawable.ic_logout)
-			SPHelper.setShared("token", userToken)
-			debugLog(authHelper.currentUser?.displayName)
+	private fun loginUser() = authHelper.loginGithub {
+		when (it) {
+			is Success -> onSuccessLogin(it.token)
+			is Fail -> errorLog(it.e)
 		}
 	}
 
+	private fun onSuccessLogin(userToken: String) {
+		changeAccountIcon(true)
+		SPHelper.setShared("token", userToken)
+		debugLog(authHelper.currentUser?.displayName)
+	}
+
+	private fun changeAccountIcon(loggedIn: Boolean) {
+		val idRes = when (loggedIn) {
+			true -> drawable.ic_logout
+			else -> drawable.ic_account
+		}
+		accountItem.icon = ContextCompat.getDrawable(this, idRes)
+	}
+
 	private fun logoutUser() {
-		authHelper.logoutUser()
-		accountItem.icon = ContextCompat.getDrawable(this, R.drawable.ic_account)
+		authHelper.logoutUser(this)
+		changeAccountIcon(false)
 	}
 
 }

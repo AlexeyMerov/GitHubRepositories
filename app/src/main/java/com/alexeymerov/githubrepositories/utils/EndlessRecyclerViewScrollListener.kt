@@ -4,12 +4,15 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import dagger.hilt.android.scopes.ActivityRetainedScoped
+import javax.inject.Inject
 
 /*
 * Taken from
 * https://gist.github.com/nesquena/d09dc68ff07e845cc622
 * */
-abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
+@ActivityRetainedScoped
+class EndlessRecyclerViewScrollListener @Inject constructor(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
 
 	// The minimum amount of items to have below your current scroll position
 	// before loading more.
@@ -102,5 +105,5 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
 	}
 
 	// Defines the process for actually loading more data based on page
-	abstract fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?)
+	var onLoadMore: (page: Int, totalItemsCount: Int, view: RecyclerView?) -> Unit = { _, _, _ -> }
 }
