@@ -36,6 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_repositories.imageRecycler
 import kotlinx.android.synthetic.main.activity_repositories.progressBar
 import kotlinx.android.synthetic.main.activity_repositories.searchToolbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -44,6 +45,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchReposActivity : BaseActivity() {
+
+	private val KEY_USER_TOKEN = "user_token"
 
 	private val viewModel by viewModels<IReposViewModel>()
 
@@ -148,8 +151,8 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun onSearchTextChanged(it: String) {
 		searchJob?.cancel("Cancel on a new query")
-		searchJob = launch {
-			delay(500L)
+		searchJob = launch(Dispatchers.IO) {
+			delay(400L)
 			lastQuery = it
 			viewModel.searchRepos(it)
 			paginationListener.resetState()
@@ -165,18 +168,18 @@ class SearchReposActivity : BaseActivity() {
 	private fun initRecycler() {
 		reposRecyclerAdapter.onRepoClicked = ::onRepoClicked
 
-		imageRecycler.also {
-			it.setItemViewCacheSize(30)
-			it.layoutManager = layoutManager
-			it.adapter = reposRecyclerAdapter
-			it.addOnScrollListener(paginationListener)
-		}
-
 		paginationListener.onLoadMore = { page, _, _ ->
 			if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
 				progressBar.visibility = View.VISIBLE
 				viewModel.searchRepos(lastQuery, page, 15)
 			}
+		}
+
+		imageRecycler.also {
+			it.setItemViewCacheSize(30)
+			it.layoutManager = layoutManager
+			it.adapter = reposRecyclerAdapter
+			it.addOnScrollListener(paginationListener)
 		}
 	}
 
@@ -195,7 +198,7 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun onSuccessLogin(userToken: String) {
 		changeAccountIcon(true)
-		SPHelper.setShared("token", userToken)
+		SPHelper.setShared(KEY_USER_TOKEN, userToken)
 		debugLog(authHelper.currentUser?.displayName)
 	}
 
