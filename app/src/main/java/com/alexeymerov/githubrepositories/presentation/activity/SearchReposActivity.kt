@@ -56,8 +56,7 @@ class SearchReposActivity : BaseActivity() {
 	@Inject
 	lateinit var layoutManager: LinearLayoutManager
 
-	@Inject
-	lateinit var paginationListener: EndlessRecyclerViewScrollListener
+	private val paginationListener by lazy { EndlessRecyclerViewScrollListener(layoutManager) }
 
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
@@ -65,7 +64,6 @@ class SearchReposActivity : BaseActivity() {
 	private lateinit var accountItem: MenuItem
 
 	private lateinit var authHelper: AuthorizationHelper
-
 	private var isInSearch = false
 	private var searchJob: Job? = null
 

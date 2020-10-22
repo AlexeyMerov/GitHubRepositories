@@ -4,15 +4,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import dagger.hilt.android.scopes.ActivityRetainedScoped
-import javax.inject.Inject
 
 /*
 * Taken from
 * https://gist.github.com/nesquena/d09dc68ff07e845cc622
 * */
-@ActivityRetainedScoped
-class EndlessRecyclerViewScrollListener @Inject constructor(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
+class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
 
 	// The minimum amount of items to have below your current scroll position
 	// before loading more.
@@ -46,6 +43,7 @@ class EndlessRecyclerViewScrollListener @Inject constructor(layoutManager: Linea
 	override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
 		var lastVisibleItemPosition = 0
 		val totalItemCount = mLayoutManager.itemCount
+		debugLog(totalItemCount)
 
 		when (mLayoutManager) {
 			is StaggeredGridLayoutManager -> {
