@@ -34,5 +34,5 @@ abstract class BaseRepository : CoroutineScope {
 		return block() // last attempt
 	}
 
-	fun clean() = cancel("Manual canceling")
+	fun clean() = coroutineContext.cancel()
 }

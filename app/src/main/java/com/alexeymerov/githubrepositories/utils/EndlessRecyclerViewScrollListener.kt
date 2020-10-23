@@ -91,6 +91,7 @@ class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : Re
 		if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount) {
 			currentPage++
 			onLoadMore(currentPage, totalItemCount, recyclerView)
+			onNextPage(currentPage)
 			loading = true
 		}
 	}
@@ -104,4 +105,5 @@ class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : Re
 
 	// Defines the process for actually loading more data based on page
 	var onLoadMore: (page: Int, totalItemsCount: Int, view: RecyclerView?) -> Unit = { _, _, _ -> }
+	var onNextPage: (page: Int) -> Unit = { _ -> }
 }

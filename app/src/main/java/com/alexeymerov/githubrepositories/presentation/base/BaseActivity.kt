@@ -39,7 +39,7 @@ abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
 	}
 
 	override fun onDestroy() {
-		cancel()
+		coroutineContext.cancel()
 		super.onDestroy()
 	}
 

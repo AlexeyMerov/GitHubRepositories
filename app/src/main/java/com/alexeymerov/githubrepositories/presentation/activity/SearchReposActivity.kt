@@ -21,6 +21,9 @@ import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.LastSearchInProgress
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.NewSearchInProgress
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Fail
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Success
@@ -34,11 +37,6 @@ import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
 import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,12 +58,9 @@ class SearchReposActivity : BaseActivity() {
 
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
-	private lateinit var lastQuery: String
 	private lateinit var accountItem: MenuItem
 
 	private lateinit var authHelper: AuthorizationHelper
-	private var isInSearch = false
-	private var searchJob: Job? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -96,15 +91,27 @@ class SearchReposActivity : BaseActivity() {
 		circleReveal(binding.searchToolbar, true)
 	}
 
-	override fun onDestroy() {
-		searchJob?.cancel()
-		super.onDestroy()
-	}
-
 	private fun initObservers() {
 		authHelper = AuthorizationHelper(activityResultRegistry)
 		lifecycle.addObserver(authHelper)
-		viewModel.getReposList().observe(this, { reposRecyclerAdapter.items = it })
+		viewModel.getReposList().observe(this, { onListDataUpdated(it) })
+		viewModel.getSearchState().observe(this, { onSearchStateUpdated(it) })
+	}
+
+	private fun onListDataUpdated(it: List<GHRepoEntity>) {
+		reposRecyclerAdapter.items = it
+		toggleProgressBar(false)
+	}
+
+	private fun onSearchStateUpdated(it: State) {
+		when (it) {
+			NewSearchInProgress -> {
+				paginationListener.resetState()
+				toggleProgressBar(true)
+			}
+			LastSearchInProgress -> toggleProgressBar(true)
+			else -> toggleProgressBar(false)
+		}
 	}
 
 	private fun initViews() {
@@ -120,15 +127,8 @@ class SearchReposActivity : BaseActivity() {
 		searchMenu = binding.searchToolbar.menu
 		menuItemSearch = searchMenu.findItem(R.id.action_filter_search)
 		menuItemSearch.onExpandListener(
-				onExpanded = {
-					circleReveal(binding.searchToolbar, true)
-					isInSearch = true
-				},
-				onCollapsed = {
-					circleReveal(binding.searchToolbar, false)
-					isInSearch = false
-//				viewModel.loadImages()
-				}
+				onExpanded = { circleReveal(binding.searchToolbar, true) },
+				onCollapsed = { circleReveal(binding.searchToolbar, false) }
 		)
 		initSearchView()
 	}
@@ -149,13 +149,7 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun onSearchTextChanged(it: String) {
-		searchJob?.cancel("Cancel on a new query")
-		searchJob = launch(Dispatchers.IO) {
-			delay(400L)
-			lastQuery = it
-			viewModel.searchRepos(it)
-			paginationListener.resetState()
-		}
+		viewModel.searchRepos(it)
 	}
 
 	private fun onRepoClicked(entity: GHRepoEntity) {
@@ -167,12 +161,7 @@ class SearchReposActivity : BaseActivity() {
 	private fun initRecycler() {
 		reposRecyclerAdapter.onRepoClicked = ::onRepoClicked
 
-		paginationListener.onLoadMore = { page, _, _ ->
-			if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
-				binding.progressBar.visibility = View.VISIBLE
-				viewModel.searchRepos(lastQuery, page, 15)
-			}
-		}
+		paginationListener.onNextPage = { page -> viewModel.searchRepos(page) }
 
 		binding.imageRecycler.also {
 			it.setItemViewCacheSize(30)
@@ -180,6 +169,10 @@ class SearchReposActivity : BaseActivity() {
 			it.adapter = reposRecyclerAdapter
 			it.addOnScrollListener(paginationListener)
 		}
+	}
+
+	private fun toggleProgressBar(needShow: Boolean) {
+		binding.progressBar.visibility = if (needShow) View.VISIBLE else View.GONE
 	}
 
 	private fun onAccountClicked() {
