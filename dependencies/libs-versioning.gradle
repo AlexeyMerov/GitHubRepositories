@@ -28,4 +28,5 @@ ext.versions = [
         firebase        : '4.3.1',
 
         kpermissions    : '1.0.0',
+        custom_tabs     : '23.3.0',
 ]

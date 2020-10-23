@@ -1,6 +1,5 @@
 package com.alexeymerov.githubrepositories.presentation.activity
 
-import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexeymerov.githubrepositories.R
@@ -154,8 +154,9 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun onRepoClicked(entity: GHRepoEntity) {
 		val uri = Uri.parse(entity.webUrl)
-		val intent = Intent(Intent.ACTION_VIEW, uri)
-		startActivity(intent)
+		val builder = CustomTabsIntent.Builder()
+		val customTabsIntent = builder.build()
+		customTabsIntent.launchUrl(this, uri)
 	}
 
 	private fun initRecycler() {

@@ -112,6 +112,7 @@ dependencies {
     // Firebase
     implementation "com.firebaseui:firebase-ui-auth:${versions.firebase}"
     implementation "com.firebaseui:firebase-ui-auth-github:${versions.firebase}"
+    implementation "com.android.support:customtabs:${versions.custom_tabs}"
 }
 
 kapt {
