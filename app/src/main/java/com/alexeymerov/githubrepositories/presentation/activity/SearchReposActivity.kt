@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.R.drawable
 import com.alexeymerov.githubrepositories.R.string
+import com.alexeymerov.githubrepositories.databinding.ActivityRepositoriesBinding
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
@@ -33,9 +34,6 @@ import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
 import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_repositories.imageRecycler
-import kotlinx.android.synthetic.main.activity_repositories.progressBar
-import kotlinx.android.synthetic.main.activity_repositories.searchToolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -58,6 +56,8 @@ class SearchReposActivity : BaseActivity() {
 
 	private val paginationListener by lazy { EndlessRecyclerViewScrollListener(layoutManager) }
 
+	private lateinit var binding: ActivityRepositoriesBinding
+
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
 	private lateinit var lastQuery: String
@@ -69,7 +69,8 @@ class SearchReposActivity : BaseActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_repositories)
+		binding = ActivityRepositoriesBinding.inflate(layoutInflater)
+		setContentView(binding.root)
 		initObservers()
 		initViews()
 	}
@@ -92,7 +93,7 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun onSearchClicked() {
 		menuItemSearch.expandActionView()
-		circleReveal(searchToolbar, true)
+		circleReveal(binding.searchToolbar, true)
 	}
 
 	override fun onDestroy() {
@@ -113,18 +114,18 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun initSearchToolbar() {
-		searchToolbar.inflateMenu(R.menu.menu_search)
-		searchToolbar.setNavigationOnClickListener { circleReveal(searchToolbar, false) }
+		binding.searchToolbar.inflateMenu(R.menu.menu_search)
+		binding.searchToolbar.setNavigationOnClickListener { circleReveal(binding.searchToolbar, false) }
 
-		searchMenu = searchToolbar.menu
+		searchMenu = binding.searchToolbar.menu
 		menuItemSearch = searchMenu.findItem(R.id.action_filter_search)
 		menuItemSearch.onExpandListener(
 				onExpanded = {
-					circleReveal(searchToolbar, true)
+					circleReveal(binding.searchToolbar, true)
 					isInSearch = true
 				},
 				onCollapsed = {
-					circleReveal(searchToolbar, false)
+					circleReveal(binding.searchToolbar, false)
 					isInSearch = false
 //				viewModel.loadImages()
 				}
@@ -168,12 +169,12 @@ class SearchReposActivity : BaseActivity() {
 
 		paginationListener.onLoadMore = { page, _, _ ->
 			if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
-				progressBar.visibility = View.VISIBLE
+				binding.progressBar.visibility = View.VISIBLE
 				viewModel.searchRepos(lastQuery, page, 15)
 			}
 		}
 
-		imageRecycler.also {
+		binding.imageRecycler.also {
 			it.setItemViewCacheSize(30)
 			it.layoutManager = layoutManager
 			it.adapter = reposRecyclerAdapter

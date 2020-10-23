@@ -38,6 +38,10 @@ android {
         jvmTarget = buildVersions.javaCompability
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     lintOptions {
 //        lintConfig file("lint.xml")
 //        baseline file("baseline-lint.xml")

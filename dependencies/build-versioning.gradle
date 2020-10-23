@@ -1,7 +1,7 @@
 def versionMajor = 0
 def versionMinor = 2
-def versionPatch = 1
-def versionFeature = 2
+def versionPatch = 0
+def versionFeature = 3
 
 ext.buildVersions = [
         buildCode         : (versionMajor * 100000) + (versionMinor * 1000) + (versionPatch * 100) + versionFeature,
