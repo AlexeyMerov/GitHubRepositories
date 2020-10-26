@@ -36,3 +36,9 @@ https://stackoverflow.com/questions/55636754
 - Retrofit, Moshi
 - RxJava2, RxAndroid
 - Firebase, Firebase UI;
+
+**After [commit](https://github.com/AlexeyMerov/GitHubRepositories/commit/1ef3567e8c66391b35ca63504b75c3360da16aaf):**
+- Dagger -> Hilt
+- Rx -> Coroutines / Flow
+- Kotlin Synthetic -> View Binding
+- MVVM + MVI
