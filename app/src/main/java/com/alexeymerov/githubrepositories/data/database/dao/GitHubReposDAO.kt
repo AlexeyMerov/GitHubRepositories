@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class GitHubReposDAO : BaseDAO<GHRepoDBEntity>() {
 
 	companion object {
+
 		const val TABLE_NAME: String = "repo_entity"
 		const val ID_ROW: String = "id"
 		const val STARS_ROW: String = "starsCount"
@@ -18,7 +19,7 @@ abstract class GitHubReposDAO : BaseDAO<GHRepoDBEntity>() {
 	abstract fun getAll(): List<GHRepoDBEntity>
 
 	@Query("SELECT * FROM $TABLE_NAME ORDER BY $STARS_ROW DESC")
-	abstract fun getAllLive(): Flow<List<GHRepoDBEntity>>
+	abstract fun getAllFlow(): Flow<List<GHRepoDBEntity>>
 
 	@Query("DELETE FROM $TABLE_NAME")
 	abstract fun removeAll()

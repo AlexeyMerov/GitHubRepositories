@@ -26,7 +26,7 @@ class ReposUseCase @Inject constructor(private val repository: IGitHubReposRepos
 		repository.searchRepositories(query, STARS, pageNum, perPage, needRemoveLastItems)
 	}
 
-	override fun getReposList(): Flow<List<GHRepoEntity>> = repository.getReposList().map(mapper::mapFrom).flowOn(Dispatchers.IO)
+	override fun getReposList(): Flow<List<GHRepoEntity>> = repository.getReposListFlow().map(mapper::mapFrom).flowOn(Dispatchers.IO)
 
 	override fun clean() = repository.clean()
 }

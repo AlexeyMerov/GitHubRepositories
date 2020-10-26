@@ -3,6 +3,9 @@ package com.alexeymerov.githubrepositories.presentation.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.PrecomputedTextCompat
+import androidx.core.widget.TextViewCompat
 import com.alexeymerov.githubrepositories.databinding.ItemRepositoryBinding
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter.ViewHolder
@@ -47,13 +50,19 @@ class RepositoriesRecyclerAdapter @Inject constructor() : BaseRecyclerAdapter<GH
 			super.bind(currentItem)
 			with(currentItem) {
 				binding.apply {
-					starsCountTv.text = starsCount
-					repositoryNameTv.text = repositoryName
-					descriptionTv.text = description
-					languageTv.text = language
-					updatedAtTv.text = updatedAt
+					starsCountTv.precomputeAndSetText(starsCount)
+					repositoryNameTv.precomputeAndSetText(repositoryName)
+					description?.let { descriptionTv.precomputeAndSetText(description) }
+					language?.let { languageTv.precomputeAndSetText(language) }
+					updatedAt?.let { updatedAtTv.precomputeAndSetText(updatedAt) }
 				}
 			}
+		}
+
+		private fun AppCompatTextView.precomputeAndSetText(text: String) {
+			val textMetricsParams = TextViewCompat.getTextMetricsParams(this)
+			val textFuture = PrecomputedTextCompat.getTextFuture(text, textMetricsParams, null)
+			setTextFuture(textFuture)
 		}
 	}
 }

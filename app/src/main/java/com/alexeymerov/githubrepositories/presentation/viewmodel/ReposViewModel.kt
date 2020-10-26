@@ -6,7 +6,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,18 +23,25 @@ class ReposViewModel
 	override fun getReposList() = repositoriesLiveData
 
 	override fun searchRepos(query: String) {
-		searchJob?.cancel("Cancel on a new query")
-		searchJob = launch(Dispatchers.IO) {
-			delay(400L)
-			searchState.postValue(State.NewSearchInProgress)
-			lastQuery = query
-			reposUseCase.searchRepositories(query)
+		if (query.isBlank()) resetState()
+		else {
+			searchJob?.cancel("Cancel on a new query")
+			searchJob = launch {
+				delay(400L)
+				searchState.postValue(State.NewSearchInProgress)
+				lastQuery = query
+				reposUseCase.searchRepositories(query)
+			}
 		}
 	}
 
 	override fun searchRepos(pageNum: Int) {
-		searchState.postValue(State.LastSearchInProgress)
+		searchState.value = State.LastSearchInProgress
 		reposUseCase.searchRepositories(lastQuery, pageNum, perPage = 15)
+	}
+
+	override fun resetState() {
+		searchState.value = State.Default
 	}
 
 	override fun onCleared() {

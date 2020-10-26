@@ -10,7 +10,7 @@ abstract class IGitHubReposRepository : BaseRepository() {
 	abstract fun searchRepositories(query: String, sortType: SORTING, pageNum: Int, perPage: Int,
 									needRemoveLastItems: Boolean)
 
-	abstract fun getReposList(): Flow<List<GHRepoDBEntity>>
+	abstract fun getReposListFlow(): Flow<List<GHRepoDBEntity>>
 
 	abstract fun clearLocalData()
 

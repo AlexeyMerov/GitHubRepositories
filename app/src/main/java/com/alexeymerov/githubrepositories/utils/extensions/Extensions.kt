@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.DecimalFormat
 
 interface AutoUpdatableAdapter<T> {
+
 	fun RecyclerView.Adapter<*>.autoNotify(oldList: List<T>, newList: List<T>) {
 		DiffUtil.calculateDiff(object : DiffUtil.Callback() {
 			override fun areItemsTheSame(oldPosition: Int, newPosition: Int) =

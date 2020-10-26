@@ -22,6 +22,8 @@ import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyc
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.Default
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.Error
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.LastSearchInProgress
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.NewSearchInProgress
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper
@@ -32,10 +34,10 @@ import com.alexeymerov.githubrepositories.utils.SPHelper
 import com.alexeymerov.githubrepositories.utils.createAlert
 import com.alexeymerov.githubrepositories.utils.debugLog
 import com.alexeymerov.githubrepositories.utils.errorLog
-import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
 import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
+import com.alexeymerov.githubrepositories.utils.extensions.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -88,7 +90,7 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun onSearchClicked() {
 		menuItemSearch.expandActionView()
-		circleReveal(binding.searchToolbar, true)
+		binding.searchToolbar.setVisible()
 	}
 
 	private fun initObservers() {
@@ -103,15 +105,28 @@ class SearchReposActivity : BaseActivity() {
 		toggleProgressBar(false)
 	}
 
-	private fun onSearchStateUpdated(it: State) {
-		when (it) {
-			NewSearchInProgress -> {
-				paginationListener.resetState()
-				toggleProgressBar(true)
-			}
-			LastSearchInProgress -> toggleProgressBar(true)
-			else -> toggleProgressBar(false)
-		}
+	private fun onSearchStateUpdated(it: State) = when (it) {
+		Default -> onDefaultState()
+		NewSearchInProgress -> onNewSearchState()
+		LastSearchInProgress -> toggleProgressBar(true)
+		is Error -> onErrorState(it)
+	}
+
+	private fun onDefaultState() {
+		binding.imageRecycler.clearOnScrollListeners()
+		toggleProgressBar(false)
+	}
+
+	private fun onNewSearchState() {
+		paginationListener.resetState()
+		binding.imageRecycler.clearOnScrollListeners()
+		binding.imageRecycler.addOnScrollListener(paginationListener)
+		toggleProgressBar(true)
+	}
+
+	private fun onErrorState(it: Error) {
+		toggleProgressBar(false)
+		errorLog(it.exception)
 	}
 
 	private fun initViews() {
@@ -122,13 +137,16 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun initSearchToolbar() {
 		binding.searchToolbar.inflateMenu(R.menu.menu_search)
-		binding.searchToolbar.setNavigationOnClickListener { circleReveal(binding.searchToolbar, false) }
+		binding.searchToolbar.setNavigationOnClickListener { binding.searchToolbar.setVisible(false) }
 
 		searchMenu = binding.searchToolbar.menu
 		menuItemSearch = searchMenu.findItem(R.id.action_filter_search)
 		menuItemSearch.onExpandListener(
-				onExpanded = { circleReveal(binding.searchToolbar, true) },
-				onCollapsed = { circleReveal(binding.searchToolbar, false) }
+				onExpanded = { binding.searchToolbar.setVisible() },
+				onCollapsed = {
+					binding.searchToolbar.setVisible(false)
+					viewModel.resetState()
+				}
 		)
 		initSearchView()
 	}
@@ -165,7 +183,7 @@ class SearchReposActivity : BaseActivity() {
 		paginationListener.onNextPage = { page -> viewModel.searchRepos(page) }
 
 		binding.imageRecycler.also {
-			it.setItemViewCacheSize(30)
+			it.setHasFixedSize(true)
 			it.layoutManager = layoutManager
 			it.adapter = reposRecyclerAdapter
 			it.addOnScrollListener(paginationListener)

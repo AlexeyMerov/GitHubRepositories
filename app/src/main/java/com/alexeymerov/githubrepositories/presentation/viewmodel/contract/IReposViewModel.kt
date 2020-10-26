@@ -18,6 +18,8 @@ abstract class IReposViewModel : BaseViewModel() {
 
 	abstract fun getSearchState(): LiveData<State>
 
+	abstract fun resetState()
+
 	sealed class State {
 		object Default : State()
 		object NewSearchInProgress : State()

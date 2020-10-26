@@ -42,7 +42,7 @@ class GitHubReposRepository
 
 	private fun handleFailedSearch(throwable: Throwable) = errorLog(throwable)
 
-	override fun getReposList(): Flow<List<GHRepoDBEntity>> = gitHubReposDAO.getAllLive()
+	override fun getReposListFlow(): Flow<List<GHRepoDBEntity>> = gitHubReposDAO.getAllFlow()
 
 	override fun clearLocalData() = gitHubReposDAO.removeAll()
 }
