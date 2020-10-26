@@ -1,15 +1,22 @@
 package com.alexeymerov.githubrepositories.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import io.reactivex.SingleTransformer
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel(), CoroutineScope {
 
-	protected fun <T> singleTransformer(): SingleTransformer<T, T> = SingleTransformer {
-		it
-				.subscribeOn(Schedulers.io())
-				.observeOn(Schedulers.io())
+	private var viewModelJob = Job()
+
+	override val coroutineContext: CoroutineContext
+		get() = Dispatchers.IO + viewModelJob
+
+	override fun onCleared() {
+		cancel()
+		super.onCleared()
 	}
 
 }

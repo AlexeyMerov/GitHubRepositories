@@ -5,11 +5,14 @@ import com.alexeymerov.githubrepositories.data.server.communicator.GitHubCommuni
 import com.alexeymerov.githubrepositories.data.server.communicator.contract.IGitHubCommunicator
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
+@InstallIn(ApplicationComponent::class)
 @Module(includes = [BaseApiModule::class])
-class GitHubApiModule {
+object GitHubApiModule {
 
 	private val API_URL = "https://api.github.com/"
 

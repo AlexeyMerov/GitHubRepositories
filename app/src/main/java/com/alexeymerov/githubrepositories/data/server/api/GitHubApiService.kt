@@ -1,7 +1,7 @@
 package com.alexeymerov.githubrepositories.data.server.api
 
 import com.alexeymerov.githubrepositories.data.server.pojo.response.SearchResponse
-import io.reactivex.Single
+import kotlinx.coroutines.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,9 +12,9 @@ interface GitHubApiService {
 	}
 
 	@GET("search/repositories")
-	fun searchRepositories(@Query("q") query: String,
-						   @Query("sort") sortType: SORTING,
-						   @Query("page") pageNum: Int,
-						   @Query("per_page") perPage: Int): Single<SearchResponse>
+	fun searchRepositoriesAsync(@Query("q") query: String,
+								@Query("sort") sortType: SORTING,
+								@Query("page") pageNum: Int,
+								@Query("per_page") perPage: Int): Deferred<SearchResponse>
 
 }

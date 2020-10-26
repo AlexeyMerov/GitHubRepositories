@@ -3,6 +3,7 @@ package com.alexeymerov.githubrepositories.utils
 import android.transition.Transition
 
 open class SilentTransitionListener : Transition.TransitionListener {
+
 	override fun onTransitionEnd(transition: Transition?) {
 		onTransitionEnd()
 	}

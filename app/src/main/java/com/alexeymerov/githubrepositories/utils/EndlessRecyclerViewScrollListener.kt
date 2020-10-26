@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 * Taken from
 * https://gist.github.com/nesquena/d09dc68ff07e845cc622
 * */
-abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
+class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
 
 	// The minimum amount of items to have below your current scroll position
 	// before loading more.
@@ -43,6 +43,7 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
 	override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
 		var lastVisibleItemPosition = 0
 		val totalItemCount = mLayoutManager.itemCount
+		debugLog(totalItemCount)
 
 		when (mLayoutManager) {
 			is StaggeredGridLayoutManager -> {
@@ -90,6 +91,7 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
 		if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount) {
 			currentPage++
 			onLoadMore(currentPage, totalItemCount, recyclerView)
+			onNextPage(currentPage)
 			loading = true
 		}
 	}
@@ -102,5 +104,6 @@ abstract class EndlessRecyclerViewScrollListener(layoutManager: LinearLayoutMana
 	}
 
 	// Defines the process for actually loading more data based on page
-	abstract fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?)
+	var onLoadMore: (page: Int, totalItemsCount: Int, view: RecyclerView?) -> Unit = { _, _, _ -> }
+	var onNextPage: (page: Int) -> Unit = { _ -> }
 }

@@ -11,4 +11,9 @@
     <string name="account">Account</string>
     <string name="language_title">Language:</string>
     <string name="updated_title">Updated on</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_description">Do you want to log out?</string>
+    <string name="ok">OK</string>
 </resources>

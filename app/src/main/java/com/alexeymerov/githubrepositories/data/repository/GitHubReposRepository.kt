@@ -7,7 +7,8 @@ import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubRepos
 import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService.SORTING
 import com.alexeymerov.githubrepositories.data.server.communicator.contract.IGitHubCommunicator
 import com.alexeymerov.githubrepositories.utils.errorLog
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GitHubReposRepository
@@ -16,13 +17,16 @@ class GitHubReposRepository
 					private val reposMapper: ResponseMapper
 ) : IGitHubReposRepository() {
 
-	override fun searchRepositories(query: String, sortType: SORTING, pageNum: Int, perPage: Int,
-									needRemoveLastItems: Boolean) {
-		gitHubCommunicator.searchRepositories(query, sortType, pageNum, perPage)
-				.compose(singleTransformer())
-				.map(reposMapper::mapFrom)
-				.subscribe({ handleSuccessSearch(it, needRemoveLastItems) }, ::handleFailedSearch)
-				.trackDisposable()
+	override fun searchRepositories(query: String, sortType: SORTING, pageNum: Int, perPage: Int, needRemoveLastItems: Boolean) {
+		launch {
+			try {
+				val response = retryOnFailure { gitHubCommunicator.searchRepositoriesAsync(query, sortType, pageNum, perPage).await() }
+				val mappedResponse = reposMapper.mapFrom(response)
+				handleSuccessSearch(mappedResponse, needRemoveLastItems)
+			} catch (e: Exception) {
+				handleFailedSearch(e)
+			}
+		}
 	}
 
 	private fun handleSuccessSearch(reposEntity: List<GHRepoDBEntity>, needRemoveLastItems: Boolean) {
@@ -38,7 +42,7 @@ class GitHubReposRepository
 
 	private fun handleFailedSearch(throwable: Throwable) = errorLog(throwable)
 
-	override fun getReposList(): Flowable<List<GHRepoDBEntity>> = gitHubReposDAO.getAllLive()
+	override fun getReposListFlow(): Flow<List<GHRepoDBEntity>> = gitHubReposDAO.getAllFlow()
 
 	override fun clearLocalData() = gitHubReposDAO.removeAll()
 }

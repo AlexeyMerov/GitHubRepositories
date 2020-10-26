@@ -11,6 +11,10 @@ import androidx.appcompat.widget.SearchView
 
 fun ViewGroup.inflate(layoutRes: Int): View = LayoutInflater.from(context).inflate(layoutRes, this, false)
 
+fun View.setVisible(isVisible: Boolean = true) {
+	visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+}
+
 fun Activity.circleReveal(view: View, needShow: Boolean) = circleReveal(view.id, needShow)
 
 private fun Activity.circleReveal(viewId: Int, needShow: Boolean) {

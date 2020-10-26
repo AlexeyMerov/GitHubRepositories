@@ -1,7 +1,5 @@
 package com.alexeymerov.githubrepositories.presentation.activity
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -10,74 +8,74 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.alexeymerov.githubrepositories.R
+import com.alexeymerov.githubrepositories.R.drawable
+import com.alexeymerov.githubrepositories.R.string
+import com.alexeymerov.githubrepositories.databinding.ActivityRepositoriesBinding
 import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
-import com.alexeymerov.githubrepositories.presentation.di.ViewModelComponent
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.Default
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.Error
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.LastSearchInProgress
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.NewSearchInProgress
+import com.alexeymerov.githubrepositories.utils.AuthorizationHelper
+import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Fail
+import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Success
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
 import com.alexeymerov.githubrepositories.utils.SPHelper
+import com.alexeymerov.githubrepositories.utils.createAlert
 import com.alexeymerov.githubrepositories.utils.debugLog
 import com.alexeymerov.githubrepositories.utils.errorLog
-import com.alexeymerov.githubrepositories.utils.extensions.circleReveal
 import com.alexeymerov.githubrepositories.utils.extensions.getColorEx
 import com.alexeymerov.githubrepositories.utils.extensions.onExpandListener
 import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
-import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_repositories.imageRecycler
-import kotlinx.android.synthetic.main.activity_repositories.progressBar
-import kotlinx.android.synthetic.main.activity_repositories.searchToolbar
-import java.util.concurrent.TimeUnit
+import com.alexeymerov.githubrepositories.utils.extensions.setVisible
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchReposActivity : BaseActivity() {
 
-	private val RC_SIGN_IN = 9988
+	private val KEY_USER_TOKEN = "user_token"
+
+	private val viewModel by viewModels<IReposViewModel>()
 
 	@Inject
-	lateinit var viewModelFactory: ViewModelProvider.Factory
-	private val viewModel by lazy { getViewModel<IReposViewModel>(viewModelFactory) }
+	lateinit var reposRecyclerAdapter: RepositoriesRecyclerAdapter
 
-	private val reposRecyclerAdapter by lazy { initRecyclerAdapter() }
-	private val layoutManager by lazy { initLayoutManager() }
-	private val searchSubject by lazy { PublishSubject.create<String>() }
+	@Inject
+	lateinit var layoutManager: LinearLayoutManager
 
-	private val firebaseAuth by lazy { FirebaseAuth.getInstance() }
-	private val isUserAuthorized: Boolean
-		get() = firebaseAuth.currentUser != null
+	private val paginationListener by lazy { EndlessRecyclerViewScrollListener(layoutManager) }
+
+	private lateinit var binding: ActivityRepositoriesBinding
 
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
-	private lateinit var lastQuery: String
-	private lateinit var searchDisposable: Disposable
-	private lateinit var paginationListener: EndlessRecyclerViewScrollListener
+	private lateinit var accountItem: MenuItem
 
-	private var isInSearch = false
+	private lateinit var authHelper: AuthorizationHelper
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_repositories)
-		initViews()
+		binding = ActivityRepositoriesBinding.inflate(layoutInflater)
+		setContentView(binding.root)
 		initObservers()
+		initViews()
 	}
-
-	override fun injectActivity(component: ViewModelComponent) = component.injectActivity(this)
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)
-		val accountItem = menu.findItem(R.id.action_login_logout)
-		if (isUserAuthorized) accountItem.icon = ContextCompat.getDrawable(this, R.drawable.ic_logout)
+		accountItem = menu.findItem(R.id.action_login_logout)
+		changeAccountIcon(authHelper.isUserAuthorized)
 		return true
 	}
 
@@ -85,41 +83,69 @@ class SearchReposActivity : BaseActivity() {
 		when (item.itemId) {
 			R.id.action_search -> onSearchClicked()
 			R.id.action_login_logout -> onAccountClicked()
+			else -> super.onOptionsItemSelected(item)
 		}
-		return super.onOptionsItemSelected(item)
+		return true
 	}
 
 	private fun onSearchClicked() {
 		menuItemSearch.expandActionView()
-		circleReveal(searchToolbar, true)
+		binding.searchToolbar.setVisible()
 	}
 
-	override fun onDestroy() {
-		searchDisposable.dispose()
-		super.onDestroy()
+	private fun initObservers() {
+		authHelper = AuthorizationHelper(activityResultRegistry)
+		lifecycle.addObserver(authHelper)
+		viewModel.getReposList().observe(this, { onListDataUpdated(it) })
+		viewModel.getSearchState().observe(this, { onSearchStateUpdated(it) })
+	}
+
+	private fun onListDataUpdated(it: List<GHRepoEntity>) {
+		reposRecyclerAdapter.items = it
+		toggleProgressBar(false)
+	}
+
+	private fun onSearchStateUpdated(it: State) = when (it) {
+		Default -> onDefaultState()
+		NewSearchInProgress -> onNewSearchState()
+		LastSearchInProgress -> toggleProgressBar(true)
+		is Error -> onErrorState(it)
+	}
+
+	private fun onDefaultState() {
+		binding.imageRecycler.clearOnScrollListeners()
+		toggleProgressBar(false)
+	}
+
+	private fun onNewSearchState() {
+		paginationListener.resetState()
+		binding.imageRecycler.clearOnScrollListeners()
+		binding.imageRecycler.addOnScrollListener(paginationListener)
+		toggleProgressBar(true)
+	}
+
+	private fun onErrorState(it: Error) {
+		toggleProgressBar(false)
+		errorLog(it.exception)
 	}
 
 	private fun initViews() {
-		initToolbar(getString(R.string.toolbar_title))
+		initToolbar(getString(string.toolbar_title))
 		initSearchToolbar()
 		initRecycler()
 	}
 
 	private fun initSearchToolbar() {
-		searchToolbar.inflateMenu(R.menu.menu_search)
-		searchToolbar.setNavigationOnClickListener { circleReveal(searchToolbar, false) }
+		binding.searchToolbar.inflateMenu(R.menu.menu_search)
+		binding.searchToolbar.setNavigationOnClickListener { binding.searchToolbar.setVisible(false) }
 
-		searchMenu = searchToolbar.menu
+		searchMenu = binding.searchToolbar.menu
 		menuItemSearch = searchMenu.findItem(R.id.action_filter_search)
 		menuItemSearch.onExpandListener(
-				onExpanded = {
-					circleReveal(searchToolbar, true)
-					isInSearch = true
-				},
+				onExpanded = { binding.searchToolbar.setVisible() },
 				onCollapsed = {
-					circleReveal(searchToolbar, false)
-					isInSearch = false
-//				viewModel.loadImages()
+					binding.searchToolbar.setVisible(false)
+					viewModel.resetState()
 				}
 		)
 		initSearchView()
@@ -129,94 +155,75 @@ class SearchReposActivity : BaseActivity() {
 		val searchView = searchMenu.findItem(R.id.action_filter_search)?.actionView as SearchView
 		searchView.isSubmitButtonEnabled = false
 		searchView.maxWidth = Integer.MAX_VALUE
-		searchView.onTextChanged { searchSubject.onNext(it) }
+		searchView.onTextChanged(::onSearchTextChanged)
 
 		val closeButton = searchView.findViewById(R.id.search_close_btn) as ImageView
-		closeButton.setImageResource(R.drawable.ic_close_black)
+		closeButton.setImageResource(drawable.ic_close_black)
 
-		val txtSearch = searchView.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
-		txtSearch.hint = getString(R.string.search_string)
+		val txtSearch = searchView.findViewById(R.id.search_src_text) as EditText
+		txtSearch.hint = getString(string.search_string)
 		txtSearch.setHintTextColor(Color.DKGRAY)
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
-
-		searchDisposable = searchSubject
-				.filter { it.isNotEmpty() }
-				.debounce(500, TimeUnit.MILLISECONDS)
-				.subscribe {
-					lastQuery = it
-					paginationListener.resetState()
-					viewModel.searchRepos(it)
-				}
 	}
 
-	private fun initLayoutManager() = LinearLayoutManager(this).apply {
-		isMeasurementCacheEnabled = true
-		isItemPrefetchEnabled = true
-		orientation = RecyclerView.VERTICAL
+	private fun onSearchTextChanged(it: String) {
+		viewModel.searchRepos(it)
 	}
-
-	private fun initRecyclerAdapter() = RepositoriesRecyclerAdapter(::onRepoClicked)
 
 	private fun onRepoClicked(entity: GHRepoEntity) {
 		val uri = Uri.parse(entity.webUrl)
-		val intent = Intent(Intent.ACTION_VIEW, uri)
-		startActivity(intent)
+		val builder = CustomTabsIntent.Builder()
+		val customTabsIntent = builder.build()
+		customTabsIntent.launchUrl(this, uri)
 	}
 
 	private fun initRecycler() {
-		paginationListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
-			override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-				if (::lastQuery.isInitialized && lastQuery.isNotEmpty()) {
-					progressBar.visibility = View.VISIBLE
-					viewModel.searchRepos(lastQuery, page, 15)
-				}
-			}
-		}
-		imageRecycler.also {
-			it.setItemViewCacheSize(30)
+		reposRecyclerAdapter.onRepoClicked = ::onRepoClicked
+
+		paginationListener.onNextPage = { page -> viewModel.searchRepos(page) }
+
+		binding.imageRecycler.also {
+			it.setHasFixedSize(true)
 			it.layoutManager = layoutManager
 			it.adapter = reposRecyclerAdapter
 			it.addOnScrollListener(paginationListener)
 		}
 	}
 
-	private fun initObservers() {
-		viewModel.getReposList().observe(this, Observer {
-			reposRecyclerAdapter.items = it
-		})
+	private fun toggleProgressBar(needShow: Boolean) {
+		binding.progressBar.visibility = if (needShow) View.VISIBLE else View.GONE
 	}
 
-	private fun onAccountClicked() = if (isUserAuthorized) logoutUser() else loginGithub()
-
-	private fun logoutUser() {
-		//todo are u sure
-		AuthUI.getInstance().signOut(this)
+	private fun onAccountClicked() {
+		if (authHelper.isUserAuthorized) {
+			createAlert(string.sign_out, string.sign_out_description, string.ok, onPositiveClick = { logoutUser() })
+		} else loginUser()
 	}
 
-	private fun loginGithub() {
-		val gitHubProvider = AuthUI.IdpConfig.GitHubBuilder().build()
-		val providers = arrayListOf(gitHubProvider)
-		val intent = AuthUI.getInstance()
-				.createSignInIntentBuilder()
-				.setAvailableProviders(providers)
-				.build()
-
-		startActivityForResult(intent, RC_SIGN_IN)
-	}
-
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		super.onActivityResult(requestCode, resultCode, data)
-		if (requestCode != RC_SIGN_IN) return
-		val response = IdpResponse.fromResultIntent(data)
-		when (resultCode) {
-			Activity.RESULT_OK -> onSuccessAuthorization(response)
-			else -> errorLog(response?.error)
+	private fun loginUser() = authHelper.loginGithub {
+		when (it) {
+			is Success -> onSuccessLogin(it.token)
+			is Fail -> errorLog(it.e)
 		}
 	}
 
-	private fun onSuccessAuthorization(response: IdpResponse?) {
-		val userToken = response?.idpToken!!
-		SPHelper.setShared("token", userToken)
-		debugLog(firebaseAuth.currentUser?.displayName)
+	private fun onSuccessLogin(userToken: String) {
+		changeAccountIcon(true)
+		SPHelper.setShared(KEY_USER_TOKEN, userToken)
+		debugLog(authHelper.currentUser?.displayName)
 	}
+
+	private fun changeAccountIcon(loggedIn: Boolean) {
+		val idRes = when (loggedIn) {
+			true -> drawable.ic_logout
+			else -> drawable.ic_account
+		}
+		accountItem.icon = ContextCompat.getDrawable(this, idRes)
+	}
+
+	private fun logoutUser() {
+		authHelper.logoutUser(this)
+		changeAccountIcon(false)
+	}
+
 }

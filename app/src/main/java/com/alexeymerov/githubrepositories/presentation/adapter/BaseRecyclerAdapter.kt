@@ -23,5 +23,6 @@ abstract class BaseRecyclerAdapter<T : Any, VH : BaseViewHolder<T>> : RecyclerVi
 }
 
 abstract class BaseViewHolder<in T : Any>(containerView: View) : RecyclerView.ViewHolder(containerView) {
+
 	abstract fun bind(currentItem: T)
 }

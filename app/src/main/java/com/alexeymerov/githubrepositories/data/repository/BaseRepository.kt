@@ -1,31 +1,38 @@
 package com.alexeymerov.githubrepositories.data.repository
 
-import io.reactivex.SingleTransformer
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
+import com.alexeymerov.githubrepositories.utils.errorLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseRepository {
+abstract class BaseRepository : CoroutineScope {
 
-	companion object {
-		private const val DEFAULT_TIMEOUT = 10L
-		private const val DEFAULT_RETRY_ATTEMPTS: Long = 4
+	private val repositoryJob = Job()
+	override val coroutineContext: CoroutineContext
+		get() = Dispatchers.IO + repositoryJob
+
+	protected suspend fun <T> retryOnFailure(
+			times: Int = 4,
+			initialDelay: Long = 100, // 0.1 second
+			maxDelay: Long = 1000,    // 1 second
+			factor: Int = 2,
+			block: suspend () -> T): T {
+		var currentDelay = initialDelay
+		repeat(times - 1) {
+			try {
+				return block()
+			} catch (e: IOException) {
+				errorLog(e)
+			}
+			delay(currentDelay)
+			currentDelay = (currentDelay * factor).coerceAtMost(maxDelay)
+		}
+		return block() // last attempt
 	}
 
-	private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-
-	protected fun <T> singleTransformer(): SingleTransformer<T, T> = SingleTransformer {
-		it
-				.subscribeOn(Schedulers.io())
-				.observeOn(Schedulers.io())
-				.timeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-				.retry(DEFAULT_RETRY_ATTEMPTS)
-	}
-
-	protected fun Disposable.trackDisposable() {
-		compositeDisposable.add(this)
-	}
-
-	fun clean() = compositeDisposable.clear()
+	fun clean() = cancel()
 }
