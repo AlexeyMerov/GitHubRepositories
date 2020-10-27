@@ -1,23 +1,24 @@
 package com.alexeymerov.githubrepositories.presentation.fragment
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.databinding.FragmentSearchReposBinding
-import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
+import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
+import com.alexeymerov.githubrepositories.presentation.dialog.REPO_ID
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.Default
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.Error
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.LastSearchInProgress
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.State.NewSearchInProgress
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.Default
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.Error
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.LastSearchInProgress
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.NewSearchInProgress
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
 import com.alexeymerov.githubrepositories.utils.errorLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,9 +60,7 @@ class SearchReposFragment : Fragment() {
 
 	private fun initRecycler() {
 		reposRecyclerAdapter.onRepoClicked = ::onRepoClicked
-
 		paginationListener.onNextPage = { page -> viewModel.searchRepos(page) }
-
 		binding.imageRecycler.also {
 			it.setHasFixedSize(true)
 			it.layoutManager = layoutManager
@@ -79,12 +78,12 @@ class SearchReposFragment : Fragment() {
 		viewModel.getSearchState().observe(viewLifecycleOwner, ::onSearchStateUpdated)
 	}
 
-	private fun onListDataUpdated(it: List<GHRepoEntity>) {
+	private fun onListDataUpdated(it: List<ListRepoEntity>) {
 		reposRecyclerAdapter.items = it
 		toggleProgressBar(false)
 	}
 
-	private fun onSearchStateUpdated(it: State) = when (it) {
+	private fun onSearchStateUpdated(it: SearchState) = when (it) {
 		Default -> onDefaultState()
 		NewSearchInProgress -> onNewSearchState()
 		LastSearchInProgress -> toggleProgressBar(true)
@@ -108,10 +107,8 @@ class SearchReposFragment : Fragment() {
 		errorLog(it.exception)
 	}
 
-	private fun onRepoClicked(entity: GHRepoEntity) {
-		val uri = Uri.parse(entity.webUrl)
-		val builder = CustomTabsIntent.Builder()
-		val customTabsIntent = builder.build()
-		customTabsIntent.launchUrl(context, uri)
+	private fun onRepoClicked(entity: ListRepoEntity) {
+		val bundle = Bundle().apply { putInt(REPO_ID, entity.id) }
+		findNavController().navigate(R.id.action_searchReposFragment_to_repoDetailsDialog, bundle)
 	}
 }

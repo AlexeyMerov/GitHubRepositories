@@ -9,6 +9,21 @@
             android:id="@+id/searchReposFragment"
             android:name="com.alexeymerov.githubrepositories.presentation.fragment.SearchReposFragment"
             android:label="fragment_search_repos"
-            tools:layout="@layout/fragment_search_repos" />
+            tools:layout="@layout/fragment_search_repos">
+        <action
+                android:id="@+id/action_searchReposFragment_to_repoDetailsDialog"
+                app:destination="@id/repoDetailsDialog">
+            <argument
+                    android:name="repoId"
+                    app:argType="integer" />
+        </action>
+    </fragment>
+
+    <dialog
+            android:id="@+id/repoDetailsDialog"
+            android:name="com.alexeymerov.githubrepositories.presentation.dialog.RepoDetailsDialog"
+            android:label="dialog_repo_details"
+            tools:layout="@layout/dialog_repo_details" />
+
 
 </navigation>

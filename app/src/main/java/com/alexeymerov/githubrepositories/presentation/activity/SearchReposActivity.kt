@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.R.drawable
+import com.alexeymerov.githubrepositories.R.id
 import com.alexeymerov.githubrepositories.R.string
 import com.alexeymerov.githubrepositories.databinding.ActivityRepositoriesBinding
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
@@ -30,10 +31,10 @@ import com.alexeymerov.githubrepositories.utils.extensions.onTextChanged
 import com.alexeymerov.githubrepositories.utils.extensions.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val KEY_USER_TOKEN = "user_token"
+
 @AndroidEntryPoint
 class SearchReposActivity : BaseActivity() {
-
-	private val KEY_USER_TOKEN = "user_token"
 
 	private val viewModel by viewModels<IReposViewModel>()
 
@@ -45,32 +46,28 @@ class SearchReposActivity : BaseActivity() {
 
 	private lateinit var authHelper: AuthorizationHelper
 
-	lateinit var navController: NavController
+	private lateinit var navController: NavController
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		binding = ActivityRepositoriesBinding.inflate(layoutInflater)
 		setContentView(binding.root)
-
-		val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-		navController = navHostFragment.navController
-		navController.navigate(R.id.searchReposFragment)
-
-		initObservers()
 		initViews()
+		initObservers()
+		initNavigation()
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)
-		accountItem = menu.findItem(R.id.action_login_logout)
+		accountItem = menu.findItem(id.action_login_logout)
 		changeAccountIcon(authHelper.isUserAuthorized)
 		return true
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
-			R.id.action_search -> onSearchClicked()
-			R.id.action_login_logout -> onAccountClicked()
+			id.action_search -> onSearchClicked()
+			id.action_login_logout -> onAccountClicked()
 			else -> super.onOptionsItemSelected(item)
 		}
 		return true
@@ -91,12 +88,18 @@ class SearchReposActivity : BaseActivity() {
 		initSearchToolbar()
 	}
 
+	private fun initNavigation() {
+		val navHostFragment = supportFragmentManager.findFragmentById(id.nav_host_fragment) as NavHostFragment
+		navController = navHostFragment.navController
+		navController.navigate(id.searchReposFragment)
+	}
+
 	private fun initSearchToolbar() {
 		binding.searchToolbar.inflateMenu(R.menu.menu_search)
 		binding.searchToolbar.setNavigationOnClickListener { binding.searchToolbar.setVisible(false) }
 
 		searchMenu = binding.searchToolbar.menu
-		menuItemSearch = searchMenu.findItem(R.id.action_filter_search)
+		menuItemSearch = searchMenu.findItem(id.action_filter_search)
 		menuItemSearch.onExpandListener(
 				onExpanded = { binding.searchToolbar.setVisible() },
 				onCollapsed = {
@@ -108,15 +111,15 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun initSearchView() {
-		val searchView = searchMenu.findItem(R.id.action_filter_search)?.actionView as SearchView
+		val searchView = searchMenu.findItem(id.action_filter_search)?.actionView as SearchView
 		searchView.isSubmitButtonEnabled = false
 		searchView.maxWidth = Integer.MAX_VALUE
 		searchView.onTextChanged(::onSearchTextChanged)
 
-		val closeButton = searchView.findViewById(R.id.search_close_btn) as ImageView
+		val closeButton = searchView.findViewById(id.search_close_btn) as ImageView
 		closeButton.setImageResource(drawable.ic_close_black)
 
-		val txtSearch = searchView.findViewById(R.id.search_src_text) as EditText
+		val txtSearch = searchView.findViewById(id.search_src_text) as EditText
 		txtSearch.hint = getString(string.search_string)
 		txtSearch.setHintTextColor(Color.DKGRAY)
 		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))

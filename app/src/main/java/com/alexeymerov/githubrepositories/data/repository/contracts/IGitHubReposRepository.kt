@@ -12,6 +12,8 @@ abstract class IGitHubReposRepository : BaseRepository() {
 
 	abstract fun getReposListFlow(): Flow<List<GHRepoDBEntity>>
 
+	abstract suspend fun getRepoDetails(repoId: Int): GHRepoDBEntity
+
 	abstract fun clearLocalData()
 
 }

@@ -16,4 +16,7 @@
     <string name="sign_out">Sign Out</string>
     <string name="sign_out_description">Do you want to log out?</string>
     <string name="ok">OK</string>
+    <string name="share_to">Share link to:</string>
+    <string name="share_url">Share URL</string>
+    <string name="open_url">Open URL</string>
 </resources>

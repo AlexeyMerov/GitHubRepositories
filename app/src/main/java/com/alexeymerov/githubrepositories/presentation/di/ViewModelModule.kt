@@ -2,7 +2,8 @@ package com.alexeymerov.githubrepositories.presentation.di
 
 import androidx.hilt.lifecycle.ViewModelAssistedFactory
 import androidx.lifecycle.ViewModel
-import com.alexeymerov.githubrepositories.presentation.viewmodel.ReposViewModel_AssistedFactory
+import com.alexeymerov.githubrepositories.presentation.viewmodel.RepoDetailsViewModel_AssistedFactory
+import com.alexeymerov.githubrepositories.presentation.viewmodel.SearchReposViewModel_AssistedFactory
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -23,6 +24,11 @@ abstract class ViewModelModule {
 	@Binds
 	@IntoMap
 	@StringKey(PACKAGE_NAME + "IReposViewModel")
-	abstract fun bindReposViewModel(factory: ReposViewModel_AssistedFactory): ViewModelAssistedFactory<out ViewModel>
+	abstract fun bindReposViewModel(factory: SearchReposViewModel_AssistedFactory): ViewModelAssistedFactory<out ViewModel>
+
+	@Binds
+	@IntoMap
+	@StringKey(PACKAGE_NAME + "IRepoDetailedViewModel")
+	abstract fun bindRepoDetailsViewModel(factory: RepoDetailsViewModel_AssistedFactory): ViewModelAssistedFactory<out ViewModel>
 
 }

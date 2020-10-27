@@ -3,7 +3,8 @@ package com.alexeymerov.githubrepositories.domain.usecase
 import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubReposRepository
 import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService.SORTING.STARS
 import com.alexeymerov.githubrepositories.domain.mapper.UseCaseReposMapper
-import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
+import com.alexeymerov.githubrepositories.domain.model.DetailedRepoEntity
+import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +27,12 @@ class ReposUseCase @Inject constructor(private val repository: IGitHubReposRepos
 		repository.searchRepositories(query, STARS, pageNum, perPage, needRemoveLastItems)
 	}
 
-	override fun getReposList(): Flow<List<GHRepoEntity>> = repository.getReposListFlow().map(mapper::mapFrom).flowOn(Dispatchers.IO)
+	override fun getReposList(): Flow<List<ListRepoEntity>> = repository.getReposListFlow().map(mapper::mapToListItem).flowOn(Dispatchers.IO)
+
+	override suspend fun getRepoDetails(repoId: Int): DetailedRepoEntity {
+		val repoDetails = repository.getRepoDetails(repoId)
+		return mapper.mapToDetailedItem(repoDetails)
+	}
 
 	override fun clean() = repository.clean()
 }

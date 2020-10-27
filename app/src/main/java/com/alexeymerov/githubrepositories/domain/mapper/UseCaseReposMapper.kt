@@ -1,7 +1,8 @@
 package com.alexeymerov.githubrepositories.domain.mapper
 
 import com.alexeymerov.githubrepositories.data.database.entity.GHRepoDBEntity
-import com.alexeymerov.githubrepositories.domain.model.GHRepoEntity
+import com.alexeymerov.githubrepositories.domain.model.DetailedRepoEntity
+import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
 import com.alexeymerov.githubrepositories.utils.extensions.formatK
 import com.alexeymerov.githubrepositories.utils.extensions.formatM
 import com.alexeymerov.githubrepositories.utils.extensions.getDateFromString
@@ -10,19 +11,31 @@ import javax.inject.Inject
 
 class UseCaseReposMapper @Inject constructor() {
 
-	fun mapFrom(list: List<GHRepoDBEntity>): List<GHRepoEntity> {
-		val resultList = ArrayList<GHRepoEntity>(list.size)
+	fun mapToListItem(list: List<GHRepoDBEntity>): List<ListRepoEntity> {
+		val resultList = ArrayList<ListRepoEntity>(list.size)
 		for (item in list) {
-			resultList.add(mapFrom(item))
+			resultList.add(mapToListItem(item))
 		}
 		return resultList
 	}
 
-	private fun mapFrom(item: GHRepoDBEntity) = with(item) {
-		GHRepoEntity(
+	private fun mapToListItem(item: GHRepoDBEntity) = with(item) {
+		ListRepoEntity(
 				id = id,
 				repositoryName = "$repositoryName/$ownerLoginName",
 				description = formatDescription(description),
+				language = language,
+				updatedAt = formatUpdateDate(updatedAt),
+				starsCount = formatStarsNumber(starsCount)
+		)
+	}
+
+	fun mapToDetailedItem(item: GHRepoDBEntity) = with(item) {
+		DetailedRepoEntity(
+				id = id,
+				ownerName = ownerLoginName,
+				repositoryName = repositoryName,
+				description = description,
 				language = language,
 				webUrl = webUrl,
 				updatedAt = formatUpdateDate(updatedAt),
