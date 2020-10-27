@@ -64,6 +64,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "androidx.core:core-ktx:${versions.ktx}"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     debugImplementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp_logging}"
     debugImplementation "com.facebook.stetho:stetho:${versions.stetho}"
@@ -105,6 +106,10 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:${versions.navigation}"
+    implementation "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
 
     // Permissions with dsl
     implementation "com.github.fondesa:kpermissions:${versions.kpermissions}"
