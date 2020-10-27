@@ -7,7 +7,6 @@ import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubRepos
 import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService.SORTING
 import com.alexeymerov.githubrepositories.data.server.communicator.contract.IGitHubCommunicator
 import com.alexeymerov.githubrepositories.utils.errorLog
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +41,9 @@ class GitHubReposRepository
 
 	private fun handleFailedSearch(throwable: Throwable) = errorLog(throwable)
 
-	override fun getReposListFlow(): Flow<List<GHRepoDBEntity>> = gitHubReposDAO.getAllFlow()
+	override fun getReposListFlow() = gitHubReposDAO.getAllFlow()
+
+	override suspend fun getRepoDetails(repoId: Int) = gitHubReposDAO.getRepo(repoId)
 
 	override fun clearLocalData() = gitHubReposDAO.removeAll()
 }

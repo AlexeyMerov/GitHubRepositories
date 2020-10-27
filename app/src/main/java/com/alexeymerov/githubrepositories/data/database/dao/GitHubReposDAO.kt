@@ -21,6 +21,9 @@ abstract class GitHubReposDAO : BaseDAO<GHRepoDBEntity>() {
 	@Query("SELECT * FROM $TABLE_NAME ORDER BY $STARS_ROW DESC")
 	abstract fun getAllFlow(): Flow<List<GHRepoDBEntity>>
 
+	@Query("SELECT * FROM $TABLE_NAME WHERE $ID_ROW = :repoId ")
+	abstract suspend fun getRepo(repoId: Int): GHRepoDBEntity
+
 	@Query("DELETE FROM $TABLE_NAME")
 	abstract fun removeAll()
 

@@ -4,8 +4,6 @@ import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.alexeymerov.githubrepositories.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +17,8 @@ abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
 	override val coroutineContext: CoroutineContext
 		get() = Dispatchers.IO + mainJob
 
-	protected fun initToolbar(titleText: String? = null, enableHomeButton: Boolean = false,
+	protected fun initToolbar(titleText: String? = null,
+							  enableHomeButton: Boolean = false,
 							  @DrawableRes iconRes: Int? = null) {
 		findViewById<Toolbar>(R.id.toolbar)?.apply {
 			setSupportActionBar(this)
@@ -51,10 +50,6 @@ abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
 	override fun finish() {
 		super.finish()
 		overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down)
-	}
-
-	inline fun <reified T : ViewModel> getViewModel(factory: ViewModelProvider.Factory): T {
-		return ViewModelProvider(this, factory).get(T::class.java)
 	}
 
 }

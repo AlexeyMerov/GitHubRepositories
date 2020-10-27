@@ -10,13 +10,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ReposViewModel
+class SearchReposViewModel
 @ViewModelInject constructor(private var reposUseCase: IReposUseCase) : IReposViewModel() {
 
 	private val repositoriesLiveData by lazy {
 		reposUseCase.getReposList().asLiveData(viewModelScope.coroutineContext)
 	}
-	private val searchState = MutableLiveData<State>(State.Default)
+	private val searchState = MutableLiveData<SearchState>(SearchState.Default)
 
 	override fun getSearchState() = searchState
 
@@ -28,7 +28,7 @@ class ReposViewModel
 			searchJob?.cancel("Cancel on a new query")
 			searchJob = launch {
 				delay(400L)
-				searchState.postValue(State.NewSearchInProgress)
+				searchState.postValue(SearchState.NewSearchInProgress)
 				lastQuery = query
 				reposUseCase.searchRepositories(query)
 			}
@@ -36,12 +36,12 @@ class ReposViewModel
 	}
 
 	override fun searchRepos(pageNum: Int) {
-		searchState.value = State.LastSearchInProgress
+		searchState.value = SearchState.LastSearchInProgress
 		reposUseCase.searchRepositories(lastQuery, pageNum, perPage = 15)
 	}
 
 	override fun resetState() {
-		searchState.value = State.Default
+		searchState.value = SearchState.Default
 	}
 
 	override fun onCleared() {
