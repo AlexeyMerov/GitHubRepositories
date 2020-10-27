@@ -42,3 +42,4 @@ https://stackoverflow.com/questions/55636754
 - Rx -> Coroutines / Flow
 - Kotlin Synthetic -> View Binding
 - MVVM + MVI
+- Navigation
