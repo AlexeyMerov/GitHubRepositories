@@ -2,6 +2,7 @@ package com.alexeymerov.githubrepositories.utils.extensions
 
 import android.content.res.Resources
 import android.view.MenuItem
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import java.text.DecimalFormat
@@ -26,6 +27,30 @@ interface AutoUpdatableAdapter<T> {
 	fun compareItems(old: T, new: T): Boolean
 
 	fun compareContentForPayload(old: T, new: T): List<T>? = null
+}
+
+abstract class AsyncAutoUpdatableAdapter<T, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
+
+	protected abstract val differ: AsyncListDiffer<T>
+
+	protected val diffCallback = object : DiffUtil.ItemCallback<T>() {
+		override fun areItemsTheSame(oldItem: T, newItem: T) = compareItems(oldItem, newItem)
+		override fun areContentsTheSame(oldItem: T, newItem: T) = compareContent(oldItem, newItem)
+		override fun getChangePayload(oldItem: T, newItem: T) = compareContentForPayload(oldItem, newItem)
+	}
+
+	fun submitList(newList: List<T>) = differ.submitList(newList)
+
+	override fun getItemCount() = differ.currentList.size
+
+	protected fun getListItem(position: Int): T = differ.currentList.elementAt(position)
+
+	protected abstract fun compareItems(old: T, new: T): Boolean
+
+	protected abstract fun compareContent(old: T, new: T): Boolean
+
+	protected abstract fun compareContentForPayload(old: T, new: T): Any?
+
 }
 
 fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
