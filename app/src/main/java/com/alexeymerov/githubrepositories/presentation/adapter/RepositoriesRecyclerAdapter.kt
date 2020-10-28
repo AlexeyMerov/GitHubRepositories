@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.widget.TextViewCompat
+import androidx.recyclerview.widget.AsyncListDiffer
 import com.alexeymerov.githubrepositories.databinding.ItemRepositoryBinding
 import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter.ViewHolder
@@ -17,28 +18,27 @@ class RepositoriesRecyclerAdapter @Inject constructor() : BaseRecyclerAdapter<Li
 
 	lateinit var onRepoClicked: (ListRepoEntity) -> Unit
 
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryViewHolder {
-		val binding = ItemRepositoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		return RepositoryViewHolder(binding) { onRepoClicked(items[it]) }
-	}
+	override val differ: AsyncListDiffer<ListRepoEntity> = AsyncListDiffer(this, diffCallback)
 
 	override fun getItemViewType(position: Int) = 0
 
 	override fun compareItems(old: ListRepoEntity, new: ListRepoEntity) = old.id == new.id
 
+	override fun compareContent(old: ListRepoEntity, new: ListRepoEntity) = old == new
+
 	override fun compareContentForPayload(old: ListRepoEntity, new: ListRepoEntity) = emptyList<ListRepoEntity>()
 
 	override fun proceedPayloads(payloads: MutableList<Any>, holder: ViewHolder, position: Int) {
 		// handle changes from payloads
-		holder.bind(items.elementAt(position))
+		holder.bind(getListItem(position))
 	}
 
-	abstract inner class ViewHolder(containerView: View) : BaseViewHolder<ListRepoEntity>(containerView) {
-
-		override fun bind(currentItem: ListRepoEntity) {
-			// do some base things
-		}
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryViewHolder {
+		val binding = ItemRepositoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+		return RepositoryViewHolder(binding) { onRepoClicked(getListItem(it)) }
 	}
+
+	abstract inner class ViewHolder(containerView: View) : BaseViewHolder<ListRepoEntity>(containerView)
 
 	inner class RepositoryViewHolder(private val binding: ItemRepositoryBinding, onItemClick: (Int) -> Unit) : ViewHolder(binding.root) {
 
@@ -47,7 +47,6 @@ class RepositoriesRecyclerAdapter @Inject constructor() : BaseRecyclerAdapter<Li
 		}
 
 		override fun bind(currentItem: ListRepoEntity) {
-			super.bind(currentItem)
 			with(currentItem) {
 				binding.apply {
 					starsCountTv.precomputeAndSetText(starsCount)

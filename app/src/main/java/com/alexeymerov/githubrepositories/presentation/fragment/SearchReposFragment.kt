@@ -78,8 +78,8 @@ class SearchReposFragment : Fragment() {
 		viewModel.getSearchState().observe(viewLifecycleOwner, ::onSearchStateUpdated)
 	}
 
-	private fun onListDataUpdated(it: List<ListRepoEntity>) {
-		reposRecyclerAdapter.items = it
+	private fun onListDataUpdated(newList: List<ListRepoEntity>) {
+		reposRecyclerAdapter.submitList(newList)
 		toggleProgressBar(false)
 	}
 
