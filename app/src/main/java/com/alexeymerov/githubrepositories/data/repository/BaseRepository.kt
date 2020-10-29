@@ -2,6 +2,7 @@ package com.alexeymerov.githubrepositories.data.repository
 
 import com.alexeymerov.githubrepositories.utils.errorLog
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,11 +16,13 @@ abstract class BaseRepository : CoroutineScope {
 	private val repositoryJob = Job()
 
 	private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-		errorLog("BaseRepository", tr = throwable)
+		errorLog(this::class.java.simpleName, tr = throwable)
 	}
 
+	private val coroutineName = CoroutineName(this::class.java.simpleName)
+
 	override val coroutineContext: CoroutineContext
-		get() = Dispatchers.IO + repositoryJob + exceptionHandler
+		get() = Dispatchers.IO + repositoryJob + exceptionHandler + coroutineName
 
 	protected suspend fun <T> retryOnFailure(
 			times: Int = 4,
