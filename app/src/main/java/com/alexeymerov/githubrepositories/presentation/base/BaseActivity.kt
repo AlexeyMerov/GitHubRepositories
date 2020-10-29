@@ -5,6 +5,8 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.alexeymerov.githubrepositories.R
+import com.alexeymerov.githubrepositories.utils.errorLog
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,8 +16,13 @@ import kotlin.coroutines.CoroutineContext
 abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
 
 	private val mainJob = Job()
+
+	private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+		errorLog("BaseActivity", tr = throwable)
+	}
+
 	override val coroutineContext: CoroutineContext
-		get() = Dispatchers.IO + mainJob
+		get() = Dispatchers.IO + mainJob + exceptionHandler
 
 	protected fun initToolbar(titleText: String? = null,
 							  enableHomeButton: Boolean = false,
