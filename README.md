@@ -1,10 +1,10 @@
 # GitHubRepositories
-Authorization with GitHub and search for repositories.
+Search for repositories and authorization with GitHub
 
-*(still in development)*
+*(in development)*
 
 **Initial requirements:**
-- Not block screen while searching
+- Don't block screen while searching
 - Show previous results *(if exists)*
 - Sort by stars
 - Cut long description *(30 chars max)*
@@ -12,21 +12,10 @@ Authorization with GitHub and search for repositories.
 
 **TODO:**
 - Use user key for request headers.
-- Pagination.
-- Add *"Viewed"* mark for items previously opened
-- Cancel active search
-
-**Possible features:**
+- *"Viewed"* mark for previously opened items
 - Filter by languages
 - Different sort types
-- Implement Google pagination library instead of scroll listener
-
-**Helpful links:**  
-https://developer.github.com/v3  
-https://github.com/firebase/FirebaseUI-Android/tree/master/auth
-
-*Also you can find an additional step to setup firebase hosting properly here:*  
-https://stackoverflow.com/questions/55636754
+- Implement Google pagination library
 
 **Tech stack:**
 - Kotlin;
@@ -38,8 +27,15 @@ https://stackoverflow.com/questions/55636754
 - Firebase, Firebase UI;
 
 **After [commit](https://github.com/AlexeyMerov/GitHubRepositories/commit/1ef3567e8c66391b35ca63504b75c3360da16aaf):**
-- Dagger -> Hilt
-- Rx -> Coroutines / Flow
-- Kotlin Synthetic -> View Binding
+- Dagger --> Hilt
+- Rx --> Coroutines / Flow
+- Kotlin Synthetic --> View Binding
 - MVVM + MVI
-- Navigation
+- Jetpack Navigation
+
+**Helpful links:**
+https://developer.github.com/v3
+https://github.com/firebase/FirebaseUI-Android/tree/master/auth
+
+*Also an additional step to setup firebase auth properly:*
+https://stackoverflow.com/questions/55636754

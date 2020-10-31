@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.alexeymerov.githubrepositories.R
@@ -40,6 +41,7 @@ class SearchReposActivity : BaseActivity() {
 
 	private lateinit var binding: ActivityRepositoriesBinding
 
+	private lateinit var searchView: SearchView
 	private lateinit var searchMenu: Menu
 	private lateinit var menuItemSearch: MenuItem
 	private lateinit var accountItem: MenuItem
@@ -71,6 +73,14 @@ class SearchReposActivity : BaseActivity() {
 			else -> super.onOptionsItemSelected(item)
 		}
 		return true
+	}
+
+	override fun onBackPressed() {
+		if (binding.searchToolbar.isVisible) {
+			binding.searchToolbar.setVisible(false)
+			searchView.setQuery("", true)
+
+		} else super.onBackPressed()
 	}
 
 	private fun onSearchClicked() {
@@ -111,7 +121,7 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun initSearchView() {
-		val searchView = searchMenu.findItem(id.action_filter_search)?.actionView as SearchView
+		searchView = searchMenu.findItem(id.action_filter_search)?.actionView as SearchView
 		searchView.isSubmitButtonEnabled = false
 		searchView.maxWidth = Integer.MAX_VALUE
 		searchView.onTextChanged(::onSearchTextChanged)
