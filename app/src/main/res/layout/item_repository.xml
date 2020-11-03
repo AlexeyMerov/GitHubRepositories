@@ -1,94 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="4dp"
-        android:background="?android:attr/selectableItemBackground">
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/repositoryName_tv"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp">
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/blue_text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/starsCount_tv"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="repositoryName" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/repositoryName_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@color/blue_text"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/starsCount_tv"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="repositoryName" />
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/description_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxEms="30"
+            android:maxLines="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/repositoryName_tv"
+            app:layout_constraintTop_toBottomOf="@+id/repositoryName_tv"
+            tools:text="description" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/description_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxEms="30"
-                android:maxLines="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="@+id/repositoryName_tv"
-                app:layout_constraintTop_toBottomOf="@+id/repositoryName_tv"
-                tools:text="description" />
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/starsCount_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/repositoryName_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="16.9k" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/starsCount_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:drawableStart="@drawable/ic_star"
-                android:drawablePadding="4dp"
-                android:gravity="center_vertical"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/repositoryName_tv"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="16.9k" />
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/language_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="@+id/repositoryName_tv"
+            app:layout_constraintTop_toBottomOf="@+id/description_tv"
+            tools:text="language" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/language_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="@+id/repositoryName_tv"
-                app:layout_constraintTop_toBottomOf="@+id/description_tv"
-                tools:text="language" />
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/updatedAtTitle_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
+            android:text="@string/updated_title"
+            app:layout_constraintEnd_toStartOf="@+id/updatedAt_tv"
+            app:layout_constraintTop_toBottomOf="@+id/description_tv" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/updatedAtTitle_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:text="@string/updated_title"
-                app:layout_constraintEnd_toStartOf="@+id/updatedAt_tv"
-                app:layout_constraintTop_toBottomOf="@+id/description_tv" />
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/updatedAt_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/language_tv"
+            tools:text="Jan 01, 1970" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/updatedAt_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/language_tv"
-                tools:text="Jan 01, 1970" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

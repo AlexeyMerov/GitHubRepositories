@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.databinding.FragmentSearchReposBinding
@@ -64,6 +65,7 @@ class SearchReposFragment : Fragment() {
 		binding.imageRecycler.also {
 			it.setHasFixedSize(true)
 			it.layoutManager = layoutManager
+			it.addItemDecoration(DividerItemDecoration(it.context, layoutManager.orientation))
 			it.adapter = reposRecyclerAdapter
 			it.addOnScrollListener(paginationListener)
 		}

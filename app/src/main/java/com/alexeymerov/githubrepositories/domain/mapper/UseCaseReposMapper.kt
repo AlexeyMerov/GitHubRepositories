@@ -22,7 +22,7 @@ class UseCaseReposMapper @Inject constructor() {
 	private fun mapToListItem(item: GHRepoDBEntity) = with(item) {
 		ListRepoEntity(
 				id = id,
-				repositoryName = "$repositoryName/$ownerLoginName",
+				repositoryName = repositoryName,
 				description = formatDescription(description),
 				language = language,
 				updatedAt = formatUpdateDate(updatedAt),
