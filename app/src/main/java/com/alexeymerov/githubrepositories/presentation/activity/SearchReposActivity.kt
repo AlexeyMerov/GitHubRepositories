@@ -35,11 +35,9 @@ import dagger.hilt.android.AndroidEntryPoint
 private const val KEY_USER_TOKEN = "user_token"
 
 @AndroidEntryPoint
-class SearchReposActivity : BaseActivity() {
+class SearchReposActivity : BaseActivity<ActivityRepositoriesBinding>() {
 
 	private val viewModel by viewModels<IReposViewModel>()
-
-	private lateinit var binding: ActivityRepositoriesBinding
 
 	private lateinit var searchView: SearchView
 	private lateinit var searchMenu: Menu
@@ -52,12 +50,12 @@ class SearchReposActivity : BaseActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		binding = ActivityRepositoriesBinding.inflate(layoutInflater)
-		setContentView(binding.root)
 		initViews()
 		initObservers()
 		initNavigation()
 	}
+
+	override fun inflateViewBinding() = ActivityRepositoriesBinding.inflate(layoutInflater)
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)
