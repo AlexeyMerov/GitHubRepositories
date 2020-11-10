@@ -35,11 +35,9 @@ import dagger.hilt.android.AndroidEntryPoint
 private const val KEY_USER_TOKEN = "user_token"
 
 @AndroidEntryPoint
-class SearchReposActivity : BaseActivity() {
+class SearchReposActivity : BaseActivity<ActivityRepositoriesBinding>() {
 
 	private val viewModel by viewModels<IReposViewModel>()
-
-	private lateinit var binding: ActivityRepositoriesBinding
 
 	private lateinit var searchView: SearchView
 	private lateinit var searchMenu: Menu
@@ -52,12 +50,12 @@ class SearchReposActivity : BaseActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		binding = ActivityRepositoriesBinding.inflate(layoutInflater)
-		setContentView(binding.root)
 		initViews()
 		initObservers()
 		initNavigation()
 	}
+
+	override fun inflateViewBinding() = ActivityRepositoriesBinding.inflate(layoutInflater)
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		menuInflater.inflate(R.menu.main_menu, menu)
@@ -122,17 +120,21 @@ class SearchReposActivity : BaseActivity() {
 
 	private fun initSearchView() {
 		searchView = searchMenu.findItem(id.action_filter_search)?.actionView as SearchView
-		searchView.isSubmitButtonEnabled = false
-		searchView.maxWidth = Integer.MAX_VALUE
-		searchView.onTextChanged(::onSearchTextChanged)
+		searchView.apply {
+			isSubmitButtonEnabled = false
+			maxWidth = Integer.MAX_VALUE
+			onTextChanged(::onSearchTextChanged)
+		}
 
-		val closeButton = searchView.findViewById(id.search_close_btn) as ImageView
+		val txtSearch = searchView.findViewById<EditText>(id.search_src_text)
+		txtSearch.apply {
+			hint = getString(string.search_string)
+			setHintTextColor(Color.DKGRAY)
+			setTextColor(getColorEx(R.color.colorPrimary))
+		}
+
+		val closeButton = searchView.findViewById<ImageView>(id.search_close_btn)
 		closeButton.setImageResource(drawable.ic_close_black)
-
-		val txtSearch = searchView.findViewById(id.search_src_text) as EditText
-		txtSearch.hint = getString(string.search_string)
-		txtSearch.setHintTextColor(Color.DKGRAY)
-		txtSearch.setTextColor(getColorEx(R.color.colorPrimary))
 	}
 
 	private fun onSearchTextChanged(it: String) {
@@ -140,9 +142,10 @@ class SearchReposActivity : BaseActivity() {
 	}
 
 	private fun onAccountClicked() {
-		if (authHelper.isUserAuthorized) {
-			createAlert(string.sign_out, string.sign_out_description, string.ok, onPositiveClick = { logoutUser() })
-		} else loginUser()
+		when (authHelper.isUserAuthorized) {
+			true -> createAlert(string.sign_out, string.sign_out_description, string.ok, onPositiveClick = { logoutUser() })
+			false -> loginUser()
+		}
 	}
 
 	private fun loginUser() = authHelper.loginGithub {

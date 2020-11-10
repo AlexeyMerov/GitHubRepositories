@@ -1,22 +1,24 @@
 package com.alexeymerov.githubrepositories.presentation.base
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.viewbinding.ViewBinding
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.utils.errorLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 
-abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
+abstract class BaseActivity<T : ViewBinding> : AppCompatActivity(), CoroutineScope {
 
-	private val mainJob = Job()
+	private val mainJob = SupervisorJob()
 
 	private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
 		errorLog(this::class.java.simpleName, tr = throwable)
@@ -26,6 +28,16 @@ abstract class BaseActivity : AppCompatActivity(), CoroutineScope {
 
 	override val coroutineContext: CoroutineContext
 		get() = Dispatchers.IO + mainJob + exceptionHandler + coroutineName
+
+	protected lateinit var binding: T
+
+	abstract fun inflateViewBinding(): T
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		binding = inflateViewBinding()
+		setContentView(binding.root)
+	}
 
 	protected fun initToolbar(titleText: String? = null,
 							  enableHomeButton: Boolean = false,
