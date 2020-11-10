@@ -12,13 +12,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseActivity<T : ViewBinding> : AppCompatActivity(), CoroutineScope {
 
-	private val mainJob = Job()
+	private val mainJob = SupervisorJob()
 
 	private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
 		errorLog(this::class.java.simpleName, tr = throwable)

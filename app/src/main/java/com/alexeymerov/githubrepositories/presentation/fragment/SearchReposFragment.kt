@@ -68,6 +68,7 @@ class SearchReposFragment : Fragment() {
 			it.addItemDecoration(DividerItemDecoration(it.context, layoutManager.orientation))
 			it.adapter = reposRecyclerAdapter
 			it.addOnScrollListener(paginationListener)
+			it.setItemViewCacheSize(4)
 		}
 	}
 
