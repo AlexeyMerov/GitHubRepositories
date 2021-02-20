@@ -66,15 +66,15 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "androidx.core:core-ktx:${versions.ktx}"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:${versions.legacy_support}"
 
     // Tests
-    testImplementation 'junit:junit:4.13.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation "junit:junit:${versions.junit}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.ext_junit}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${versions.espresso_core}"
 
-    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.28-alpha'
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.28-alpha'
+    androidTestImplementation "com.google.dagger:hilt-android-testing:${versions.hilt_testing}"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:${versions.hilt_compiler}"
 
     // Debugging
     debugImplementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp_logging}"
