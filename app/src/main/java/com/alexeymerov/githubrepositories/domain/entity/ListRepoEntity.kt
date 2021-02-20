@@ -1,12 +1,10 @@
-package com.alexeymerov.githubrepositories.domain.model
+package com.alexeymerov.githubrepositories.domain.entity
 
-data class DetailedRepoEntity(
+data class ListRepoEntity(
 		val id: Int,
-		val ownerName: String,
 		val repositoryName: String,
 		val description: String?,
 		val language: String?,
-		val webUrl: String,
 		val updatedAt: String?,
 		val starsCount: String
 )

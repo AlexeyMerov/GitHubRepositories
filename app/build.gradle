@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
@@ -14,6 +13,8 @@ android {
         targetSdkVersion buildVersions.targetSdk
         versionCode = buildVersions.buildCode
         versionName = buildVersions.buildName
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.alexeymerov.githubrepositories.HiltTestRunner"
     }
 
     buildTypes {
@@ -64,8 +65,17 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "androidx.core:core-ktx:${versions.ktx}"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:${versions.legacy_support}"
 
+    // Tests
+    testImplementation "junit:junit:${versions.junit}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.ext_junit}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${versions.espresso_core}"
+
+    androidTestImplementation "com.google.dagger:hilt-android-testing:${versions.hilt_testing}"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:${versions.hilt_compiler}"
+
+    // Debugging
     debugImplementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp_logging}"
     debugImplementation "com.facebook.stetho:stetho:${versions.stetho}"
     debugImplementation "com.facebook.stetho:stetho-okhttp3:${versions.stetho}"
@@ -92,7 +102,6 @@ dependencies {
     kapt "androidx.hilt:hilt-compiler:${versions.hilt_lifecycle}"
 
     // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-common-java8:${versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:${versions.livedata_ktx}"

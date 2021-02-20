@@ -11,15 +11,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.databinding.FragmentSearchReposBinding
-import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.dialog.REPO_ID
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.Default
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.Error
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.LastSearchInProgress
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel.SearchState.NewSearchInProgress
+import com.alexeymerov.githubrepositories.presentation.viewmodel.SearchReposViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.ISearchReposViewModel.SearchState
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.ISearchReposViewModel.SearchState.Default
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.ISearchReposViewModel.SearchState.Error
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.ISearchReposViewModel.SearchState.LastSearchInProgress
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.ISearchReposViewModel.SearchState.NewSearchInProgress
 import com.alexeymerov.githubrepositories.utils.EndlessRecyclerViewScrollListener
 import com.alexeymerov.githubrepositories.utils.errorLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SearchReposFragment : Fragment() {
 
-	private val viewModel by viewModels<IReposViewModel>()
+	private val viewModel by viewModels<SearchReposViewModel>()
 
 	@Inject
 	lateinit var reposRecyclerAdapter: RepositoriesRecyclerAdapter

@@ -18,7 +18,7 @@ import com.alexeymerov.githubrepositories.R.id
 import com.alexeymerov.githubrepositories.R.string
 import com.alexeymerov.githubrepositories.databinding.ActivityRepositoriesBinding
 import com.alexeymerov.githubrepositories.presentation.base.BaseActivity
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.SearchReposViewModel
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Fail
 import com.alexeymerov.githubrepositories.utils.AuthorizationHelper.State.Success
@@ -37,7 +37,7 @@ private const val KEY_USER_TOKEN = "user_token"
 @AndroidEntryPoint
 class SearchReposActivity : BaseActivity<ActivityRepositoriesBinding>() {
 
-	private val viewModel by viewModels<IReposViewModel>()
+	private val viewModel by viewModels<SearchReposViewModel>()
 
 	private lateinit var searchView: SearchView
 	private lateinit var searchMenu: Menu

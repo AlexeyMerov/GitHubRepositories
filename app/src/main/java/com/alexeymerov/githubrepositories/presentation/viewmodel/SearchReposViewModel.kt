@@ -1,17 +1,19 @@
 package com.alexeymerov.githubrepositories.presentation.viewmodel
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.ISearchReposViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
 class SearchReposViewModel
-@ViewModelInject constructor(private var reposUseCase: IReposUseCase) : IReposViewModel() {
+@Inject constructor(private var reposUseCase: IReposUseCase) : ISearchReposViewModel() {
 
 	private val repositoriesLiveData by lazy {
 		reposUseCase.getReposList().asLiveData(viewModelScope.coroutineContext)

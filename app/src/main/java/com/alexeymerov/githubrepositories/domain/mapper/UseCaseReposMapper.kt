@@ -1,8 +1,8 @@
 package com.alexeymerov.githubrepositories.domain.mapper
 
 import com.alexeymerov.githubrepositories.data.database.entity.GHRepoDBEntity
-import com.alexeymerov.githubrepositories.domain.model.DetailedRepoEntity
-import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.DetailedRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import com.alexeymerov.githubrepositories.utils.extensions.formatK
 import com.alexeymerov.githubrepositories.utils.extensions.formatM
 import com.alexeymerov.githubrepositories.utils.extensions.getDateFromString

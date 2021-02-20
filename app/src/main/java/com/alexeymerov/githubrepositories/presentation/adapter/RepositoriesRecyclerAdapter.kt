@@ -8,7 +8,7 @@ import androidx.core.text.PrecomputedTextCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import com.alexeymerov.githubrepositories.databinding.ItemRepositoryBinding
-import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter.ViewHolder
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
