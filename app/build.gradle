@@ -14,6 +14,8 @@ android {
         targetSdkVersion buildVersions.targetSdk
         versionCode = buildVersions.buildCode
         versionName = buildVersions.buildName
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.alexeymerov.githubrepositories.HiltTestRunner"
     }
 
     buildTypes {
@@ -66,6 +68,15 @@ dependencies {
     implementation "androidx.core:core-ktx:${versions.ktx}"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    // Tests
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.28-alpha'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.28-alpha'
+
+    // Debugging
     debugImplementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp_logging}"
     debugImplementation "com.facebook.stetho:stetho:${versions.stetho}"
     debugImplementation "com.facebook.stetho:stetho-okhttp3:${versions.stetho}"

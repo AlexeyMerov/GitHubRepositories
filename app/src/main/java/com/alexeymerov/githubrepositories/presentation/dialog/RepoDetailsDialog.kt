@@ -10,7 +10,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.viewModels
 import com.alexeymerov.githubrepositories.R.string
 import com.alexeymerov.githubrepositories.databinding.DialogRepoDetailsBinding
-import com.alexeymerov.githubrepositories.domain.model.DetailedRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.DetailedRepoEntity
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel.DetailedRepoState
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel.DetailedRepoState.Default

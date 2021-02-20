@@ -1,7 +1,7 @@
 package com.alexeymerov.githubrepositories.domain.usecase.contract
 
-import com.alexeymerov.githubrepositories.domain.model.DetailedRepoEntity
-import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.DetailedRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import kotlinx.coroutines.flow.Flow
 
 interface IReposUseCase : IUseCase<ListRepoEntity> {

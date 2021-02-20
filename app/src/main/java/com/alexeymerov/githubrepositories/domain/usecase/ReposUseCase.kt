@@ -2,9 +2,9 @@ package com.alexeymerov.githubrepositories.domain.usecase
 
 import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubReposRepository
 import com.alexeymerov.githubrepositories.data.server.api.GitHubApiService.SORTING.STARS
+import com.alexeymerov.githubrepositories.domain.entity.DetailedRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import com.alexeymerov.githubrepositories.domain.mapper.UseCaseReposMapper
-import com.alexeymerov.githubrepositories.domain.model.DetailedRepoEntity
-import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

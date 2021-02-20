@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexeymerov.githubrepositories.R
 import com.alexeymerov.githubrepositories.databinding.FragmentSearchReposBinding
-import com.alexeymerov.githubrepositories.domain.model.ListRepoEntity
+import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import com.alexeymerov.githubrepositories.presentation.adapter.RepositoriesRecyclerAdapter
 import com.alexeymerov.githubrepositories.presentation.dialog.REPO_ID
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IReposViewModel
