@@ -1,15 +1,16 @@
 package com.alexeymerov.githubrepositories.presentation.viewmodel
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import com.alexeymerov.githubrepositories.domain.usecase.contract.IReposUseCase
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RepoDetailsViewModel
-@ViewModelInject constructor(private var reposUseCase: IReposUseCase) : IRepoDetailedViewModel() {
+@HiltViewModel
+class RepoDetailsViewModel @Inject constructor(private var reposUseCase: IReposUseCase) : IRepoDetailedViewModel() {
 
 	private val searchState = MutableLiveData<DetailedRepoState>(DetailedRepoState.Default)
 

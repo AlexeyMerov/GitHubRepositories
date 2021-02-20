@@ -6,11 +6,11 @@ import com.alexeymerov.githubrepositories.data.server.communicator.contract.IGit
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module(includes = [BaseApiModule::class])
 object GitHubApiModule {
 

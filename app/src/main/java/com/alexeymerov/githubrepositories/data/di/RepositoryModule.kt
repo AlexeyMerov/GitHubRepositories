@@ -5,15 +5,15 @@ import com.alexeymerov.githubrepositories.data.repository.contracts.IGitHubRepos
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
 	@Binds
-	@ActivityRetainedScoped
+	@Singleton
 	abstract fun provideGitHubRepository(gitHubReposRepository: GitHubReposRepository): IGitHubReposRepository
 
 }

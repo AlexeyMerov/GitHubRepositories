@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import com.alexeymerov.githubrepositories.R.string
 import com.alexeymerov.githubrepositories.databinding.DialogRepoDetailsBinding
 import com.alexeymerov.githubrepositories.domain.entity.DetailedRepoEntity
-import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel
+import com.alexeymerov.githubrepositories.presentation.viewmodel.RepoDetailsViewModel
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel.DetailedRepoState
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel.DetailedRepoState.Default
 import com.alexeymerov.githubrepositories.presentation.viewmodel.contract.IRepoDetailedViewModel.DetailedRepoState.Error
@@ -26,7 +26,7 @@ const val REPO_ID = "repoId"
 @AndroidEntryPoint
 class RepoDetailsDialog : BottomSheetDialogFragment() {
 
-	private val viewModel by viewModels<IRepoDetailedViewModel>()
+	private val viewModel by viewModels<RepoDetailsViewModel>()
 
 	private var _binding: DialogRepoDetailsBinding? = null
 	private val binding get() = _binding!!

@@ -5,7 +5,7 @@ import com.alexeymerov.githubrepositories.domain.entity.ListRepoEntity
 import com.alexeymerov.githubrepositories.presentation.viewmodel.BaseViewModel
 import kotlinx.coroutines.Job
 
-abstract class IReposViewModel : BaseViewModel() {
+abstract class ISearchReposViewModel : BaseViewModel() {
 
 	protected var searchJob: Job? = null
 	protected var lastQuery: String = ""
